@@ -1,2 +1,0 @@
-# beertj-store
-The first 
