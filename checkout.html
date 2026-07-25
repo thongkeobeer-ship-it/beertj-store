@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ຢືນຢັນການສັ່ງຊື້</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- BACK + TITLE -->
+  <div class="back-row">
+    <button class="back-btn" id="backBtn" aria-label="ກັບຄືນ">←</button>
+    <h1 class="page-title">ຢືນຢັນການສັ່ງຊື້</h1>
+  </div>
+
+  <div id="loadingNote" class="empty-note">ກຳລັງໂຫຼດຂໍ້ມູນສິນຄ້າ...</div>
+
+  <div id="orderContent" style="display:none">
+
+    <!-- ORDER HERO -->
+    <div class="order-hero">
+      <h2 class="shine-text">ກວດສອບການສັ່ງຊື້</h2>
+      <p>ກວດລາຍລະອຽດໃຫ້ຄົບກ່ອນກົດຢືນຢັນ</p>
+    </div>
+
+    <!-- PRODUCT SUMMARY -->
+    <div class="order-product">
+      <div class="order-thumb" id="orderThumb">ຮູບ</div>
+      <div class="order-info">
+        <div class="name" id="orderName">ຊື່ສິນຄ້າ</div>
+        <div class="meta" id="orderMeta">ໝວດໝູ່ສິນຄ້າ • ຄົງເຫຼືອ 0</div>
+      </div>
+    </div>
+
+    <!-- QUANTITY -->
+    <div class="qty-row">
+      <div class="qty-label">ຈຳນວນ</div>
+      <div class="qty-control">
+        <button class="qty-btn" id="qtyMinus">−</button>
+        <div class="qty-value" id="qtyValue">1</div>
+        <button class="qty-btn" id="qtyPlus">+</button>
+      </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="order-note">
+      <label for="orderNote">ຂໍ້ມູນເພີ່ມເຕີມ (ຖ້າມີ)</label>
+      <textarea id="orderNote" placeholder="ເຊັ່ນ: ໄອດີເກມ, ຊ່ອງທາງຕິດຕໍ່, ໝາຍເຫດອື່ນໆ"></textarea>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="order-summary">
+      <div class="summary-row">
+        <span>ລາຄາຕໍ່ອັນ</span>
+        <span id="unitPrice">฿0</span>
+      </div>
+      <div class="summary-row">
+        <span>ຈຳນວນ</span>
+        <span id="qtyDisplay">x1</span>
+      </div>
+      <div class="summary-row total">
+        <span>ລວມທັງໝົດ</span>
+        <span class="amount shine-text" id="totalPrice">฿0</span>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="confirmBtn">ຢືນຢັນການສັ່ງຊື້</button>
+    <div class="order-id" id="orderId">ລະຫັດການສັ່ງຊື້: —</div>
+
+  </div>
+
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <h3>ສັ່ງຊື້ສຳເລັດ</h3>
+    <p id="successText">ຂອບໃຈສຳລັບການສັ່ງຊື້</p>
+    <div class="order-id" id="codeDisplay" style="display:none"></div>
+    <button class="success-close" id="successClose">ກັບໜ້າຫຼັກ</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+  // ປ້ອງກັນໜ້ານີ້: ຖ້າຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ ຫ້າມເຂົ້າ ໃຫ້ພາໄປໜ້າ login ກ່ອນ
+  (async () => {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = 'login.html?redirect=index.html';
+    }
+  })();
+</script>
+<script src="checkout.js"></script>
+</body>
+</html>
