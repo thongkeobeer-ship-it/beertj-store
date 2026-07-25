@@ -1,0 +1,136 @@
+// ສະຄຣິບໜ້າຢືນຢັນການສັ່ງຊື້
+
+const SHIPPING_FEE = 0; // ປັບຄ່າສົ່ງຕາມຈິງໄດ້ທີ່ນີ້ (0 = ຟຣີ)
+
+let currentProduct = null;
+let qty = 1;
+
+function formatBaht(n){
+  return '฿' + Number(n || 0).toLocaleString('th-TH');
+}
+
+function getProductIdFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+function renderProduct(p){
+  const thumb = document.getElementById('orderThumb');
+  const nameEl = document.getElementById('orderName');
+  const metaEl = document.getElementById('orderMeta');
+
+  thumb.innerHTML = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+    : '[ ບໍ່ມີຮູບ ]';
+  nameEl.textContent = p.name;
+  metaEl.textContent = `${p.category || 'ສິນຄ້າ'} • ${formatBaht(p.price)} / ຊິ້ນ • ຄົງເຫຼືອ ${p.stock ?? 0}`;
+}
+
+function renderSummary(){
+  const subtotal = (currentProduct?.price || 0) * qty;
+  const total = subtotal + SHIPPING_FEE;
+  document.getElementById('qtyValue').textContent = qty;
+  document.getElementById('sumSubtotal').textContent = formatBaht(subtotal);
+  document.getElementById('sumShipping').textContent = SHIPPING_FEE > 0 ? formatBaht(SHIPPING_FEE) : 'ຟຣີ';
+  document.getElementById('sumTotal').textContent = formatBaht(total);
+}
+
+function setQty(next){
+  const max = currentProduct?.stock ?? 1;
+  qty = Math.max(1, Math.min(next, Math.max(max, 1)));
+  renderSummary();
+}
+
+async function loadProduct(){
+  const id = getProductIdFromUrl();
+  const nameEl = document.getElementById('orderName');
+  const confirmBtn = document.getElementById('confirmBtn');
+
+  if (!id) {
+    nameEl.textContent = 'ບໍ່ພົບສິນຄ້າທີ່ເລືອກ';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    return;
+  }
+
+  if (typeof supabaseClient === 'undefined') {
+    nameEl.textContent = 'ຍັງບໍ່ໄດ້ຕັ້ງຄ່າການເຊື່ອມຕໍ່ຖານຂໍ້ມູນ';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    return;
+  }
+
+  const { data: product, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !product) {
+    nameEl.textContent = 'ບໍ່ພົບສິນຄ້ານີ້ໃນຮ້ານ';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    return;
+  }
+
+  const { data: stock } = await supabaseClient.rpc('product_stock', { p_product_id: product.id });
+  currentProduct = { ...product, stock: stock ?? 0 };
+
+  if (currentProduct.stock <= 0) {
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+  }
+
+  renderProduct(currentProduct);
+  renderSummary();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadProduct();
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    window.history.length > 1 ? window.history.back() : (window.location.href = 'index.html');
+  });
+
+  document.getElementById('qtyMinus').addEventListener('click', () => setQty(qty - 1));
+  document.getElementById('qtyPlus').addEventListener('click', () => setQty(qty + 1));
+
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.addEventListener('click', async () => {
+    if (!currentProduct) return;
+
+    const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
+    if (!user) {
+      window.location.href = 'login.html?redirect=checkout.html?id=' + encodeURIComponent(currentProduct.id);
+      return;
+    }
+
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.6';
+    confirmBtn.textContent = 'ກຳລັງດຳເນີນການ...';
+
+    const note = document.getElementById('orderNoteInput').value.trim();
+    const orderRef = 'ORD-' + Date.now().toString(36).toUpperCase();
+
+    // ---------------------------------------------------------------
+    // TODO: ບັນທຶກລາຍການສັ່ງຊື້ຈິງລົງຕາຕະລາງ orders ຂອງທ່ານຢູ່ບ່ອນນີ້
+    // ຕົວຢ່າງ:
+    // await supabaseClient.from('orders').insert({
+    //   product_id: currentProduct.id,
+    //   user_id: user.id,
+    //   quantity: qty,
+    //   note: note,
+    //   ref: orderRef,
+    // });
+    // ---------------------------------------------------------------
+
+    document.getElementById('orderRef').textContent = 'ລະຫັດອ້າງອີງ: ' + orderRef;
+    document.getElementById('successText').textContent =
+      `ຮ້ານໄດ້ຮັບຄຳສັ່ງຊື້ "${currentProduct.name}" ຈຳນວນ ${qty} ຊິ້ນແລ້ວ ຈະຕິດຕໍ່ກັບໄປໄວໆນີ້`;
+    document.getElementById('successOverlay').classList.add('show');
+  });
+
+  document.getElementById('successClose').addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
+});
