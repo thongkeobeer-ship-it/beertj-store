@@ -107,14 +107,16 @@ async function loadProducts() {
   return withStock;
 }
 
-// ---------- ຕົວເລືອກໝວດໝູ່ (ດຶງມາຈາກໝວດໝູ່ຂອງສິນຄ້າທີ່ມີຢູ່ແລ້ວ) ----------
+// ---------- ຕົວເລືອກໝວດໝູ່ (ໝວດໝູ່ຄົງທີ່ຈາກໜ້າເວັບ + ໝວດໝູ່ອື່ນທີ່ມີໃນສິນຄ້າຢູ່ແລ້ວ) ----------
+const FIXED_CATEGORIES = ['ໝວດໝູ່ 1', 'ໝວດໝູ່ 2', 'ໝວດໝູ່ 3'];
+
 function renderCategoryOptions(products) {
   const select = document.getElementById('pCategorySelect');
   if (!select) return;
 
-  const categories = [...new Set(
-    products.map(p => (p.category || '').trim()).filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b, 'th'));
+  const fromProducts = products.map(p => (p.category || '').trim()).filter(Boolean);
+  const categories = [...new Set([...FIXED_CATEGORIES, ...fromProducts])]
+    .sort((a, b) => a.localeCompare(b, 'th'));
 
   const prevValue = select.value;
   select.innerHTML =
