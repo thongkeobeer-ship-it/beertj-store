@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ===== ວິດີໂອພື້ນຫລັງໝວດໝູ່ (loop, ບໍ່ມີສຽງ) ===== */
+  .cat-card{ position:relative; overflow:hidden; }
+  .cat-card-media{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:0; pointer-events:none;
+  }
+  .cat-card::after{
+    content:""; position:absolute; inset:0; z-index:0;
+    background:linear-gradient(180deg, rgba(10,8,20,0.35) 0%, rgba(10,8,20,0.78) 100%);
+  }
+  .cat-card h3, .cat-card p{ position:relative; z-index:1; text-shadow:0 1px 6px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9); }
+  .cat-card p{ color:#f0f0f5; }
+
+  /* ===== ໂລໂກ້ຮ້ານເປັນປະກາຍແສງຢູ່ໃນມືຕົວລະຄອນ ===== */
+  .media-slot{ position:relative; }
+  .hero-sign{
+    position:absolute;
+    left:60%; top:57%;
+    transform:translate(-50%,-50%) rotate(-27deg);
+    display:flex;
+    align-items:center;
+    pointer-events:none;
+    z-index:2;
+  }
+  .hero-sign::before{
+    content:"";
+    position:absolute;
+    inset:-10px -7px;
+    background:radial-gradient(ellipse at center, rgba(180,120,255,0.4) 0%, rgba(180,120,255,0) 72%);
+    filter:blur(2px);
+    animation:signAura 3s ease-in-out infinite;
+    z-index:-1;
+  }
+  @keyframes signAura{
+    0%,100%{ opacity:0.55; transform:scale(0.94); }
+    50%{ opacity:1; transform:scale(1.08); }
+  }
+  .hero-letter{
+    display:inline-block;
+    font-family:'Chakra Petch','Noto Sans Thai',sans-serif;
+    font-weight:800;
+    font-size:clamp(5.5px, 1.5vw, 7.5px);
+    letter-spacing:0.4px;
+    margin:0 0.4px;
+    background:linear-gradient(90deg, #ffffff, #d9b8ff, #9b5cf0, #d9b8ff, #ffffff);
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:
+      0 0 2px rgba(255,255,255,0.7),
+      0 0 5px rgba(190,140,255,0.85),
+      0 0 9px rgba(124,58,237,0.6);
+    animation:hlWave 2.6s ease-in-out infinite, hlColorCycle 3.2s linear infinite;
+  }
+  .hero-letter:nth-child(1){ animation-delay:0s; }
+  .hero-letter:nth-child(2){ animation-delay:.09s; }
+  .hero-letter:nth-child(3){ animation-delay:.18s; }
+  .hero-letter:nth-child(4){ animation-delay:.27s; }
+  .hero-letter:nth-child(5){ animation-delay:.36s; }
+  .hero-letter:nth-child(6){ animation-delay:.45s; }
+  .hero-letter:nth-child(7){ animation-delay:.54s; }
+  .hero-letter:nth-child(8){ animation-delay:.63s; }
+  .hero-letter:nth-child(9){ animation-delay:.72s; }
+  .hero-letter:nth-child(10){ animation-delay:.81s; }
+  .hero-letter:nth-child(11){ animation-delay:.9s; }
+  @keyframes hlWave{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-3.5px); }
+  }
+  @keyframes hlColorCycle{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:200% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-letter{ animation:none !important; } .hero-sign::before{ animation:none !important; } }
+
+  /* ===== ເສດດາວປະກາຍອ້ອມຮອບໂລໂກ້ ===== */
+  .hero-spark{
+    position:absolute;
+    width:2px; height:2px;
+    background:#f0e0ff;
+    border-radius:50%;
+    box-shadow:0 0 2px #ffffff, 0 0 5px rgba(190,140,255,0.95), 0 0 9px rgba(124,58,237,0.6);
+    pointer-events:none;
+    animation:sparkTwinkle 2.2s ease-in-out infinite;
+  }
+  .hero-spark::before{
+    content:"✦";
+    position:absolute; inset:-4px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:4.5px; color:#f0e0ff; line-height:1;
+  }
+  .spk1{ top:-10px; left:2%;   animation-delay:0s;   }
+  .spk2{ top:-7px; left:98%;  animation-delay:.4s;  }
+  .spk3{ bottom:-9px; left:10%; animation-delay:.8s;  }
+  .spk4{ bottom:-7px; left:88%; animation-delay:1.2s; }
+  .spk5{ top:40%; left:-9px; animation-delay:1.6s; }
+  @keyframes sparkTwinkle{
+    0%,100%{ opacity:0.15; transform:scale(0.5) rotate(0deg); }
+    50%{ opacity:1; transform:scale(1.2) rotate(20deg); }
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-spark{ animation:none !important; } }
+</style>
+</head>
+<body>
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+
+<!-- ===== ເມນູແບບເລື່ອນອອກ (side menu) ===== -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+  <div class="side-menu-head">
+    <div class="side-menu-brand">
+      <img src="logo.png" alt="Figger!Shop" class="side-menu-logo">
+      <span class="shine-text">𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</span>
+    </div>
+    <button class="side-menu-close" id="sideMenuClose" aria-label="ປິດເມນູ" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="side-menu-user" id="sideMenuUser">
+    <div class="side-menu-guest">ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງຍອດເງິນ ແລະ ປະຫວັດການສັ່ງຊື້</div>
+  </div>
+
+  <nav class="side-menu-nav">
+    <a class="side-menu-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ໜ້າຫຼັກ
+    </a>
+    <a class="side-menu-link" href="index.html#productGrid" id="sideMenuProductsLink">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L22 6H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+      ສິນຄ້າທັງໝົດ
+    </a>
+    <a class="side-menu-link" href="topup.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h.01"/></svg>
+      ເຕີມເງິນ
+    </a>
+    <a class="side-menu-link" href="orders.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      ປະຫວັດການສັ່ງຊື້
+    </a>
+    <a class="side-menu-link" id="sideMenuAdminLink" href="admin.html" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg>
+      ຫ້ອງຄວບຄຸມແອດມິນ
+    </a>
+  </nav>
+
+  <div class="side-menu-foot" id="sideMenuFoot">
+    <a class="side-menu-link" href="login.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      ເຂົ້າສູ່ລະບົບ
+    </a>
+  </div>
+</aside>
+
+<div class="wrap">
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="brand">
+      <img src="logo.png" alt="Figger!Shop" class="brand-mark">
+      <div class="brand-name shine-text">𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</div>
+    </div>
+    <div id="authSlot" class="auth-slot"></div>
+    <button class="menu-btn" id="menuBtn" aria-label="ເປີດເມນູ" aria-controls="sideMenu" aria-expanded="false" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="eyebrow">ເວັບຢູ່ໃນຊ່ວງທົດລອງ🙏🏻</span>
+    <h1 class="shine-text"></h1>
+    <p>ຄຳອະທິບາຍສັ້ນໆກ່ຽວກັບຮ້ານຂອງທ່ານ ໃສ່ຈຸດເດັ່ນ ແລະ ສິ່ງທີ່ລູກຄ້າຈະໄດ້ຮັບຢູ່ບ່ອນນີ້</p>
+    <div class="cta-row">
+      <button class="btn btn-primary" id="ctaStartBtn">ເລີ່ມຕົ້ນນຳໃຊ້</button>
+      <button class="btn btn-secondary" id="ctaTopupBtn">ເຕີມເງິນ →</button>
+    </div>
+  </div>
+
+  <!-- IMAGE PLACEHOLDER -->
+  <div class="media-slot has-photo">
+    <video class="media-photo" src="hero-live.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <div class="hero-sign">
+      <span class="hero-letter">F</span><span class="hero-letter">I</span><span class="hero-letter">G</span><span class="hero-letter">G</span><span class="hero-letter">E</span><span class="hero-letter">R</span><span class="hero-letter">!</span><span class="hero-letter">S</span><span class="hero-letter">H</span><span class="hero-letter">O</span><span class="hero-letter">P</span>
+      <span class="hero-spark spk1"></span>
+      <span class="hero-spark spk2"></span>
+      <span class="hero-spark spk3"></span>
+      <span class="hero-spark spk4"></span>
+      <span class="hero-spark spk5"></span>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENT -->
+  <div class="announce">
+    <span class="dot-icon"></span>
+    <span>ຂໍ້ຄວາມປະກາດ / ໂປຣໂມຊັ່ນຂອງຮ້ານທ່ານ</span>
+  </div>
+
+  <!-- LIVE BANNER -->
+  <div class="live-banner" id="liveBanner" style="display:none;">
+    <div class="live-left"><span class="live-dot"></span> ສົດ</div>
+    <div class="live-mid" id="liveAmountText">ຕົວຢ່າງຂໍ້ຄວາມແຈ້ງເຕືອນການສັ່ງຊື້ — 0 ບາດ</div>
+    <div class="live-time" id="liveTimeText">0 ນາທີຜ່ານມາ</div>
+  </div>
+
+  <!-- STAT GRID -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-num">0</div>
+      <div class="stat-label">ຜູ້ໃຊ້ງານ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statProductCount">0</div>
+      <div class="stat-label">ສິນຄ້າ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statStockCount">0</div>
+      <div class="stat-label">ຄັງສິນຄ້າ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statSoldCount">0</div>
+      <div class="stat-label">ຂາຍແລ້ວ</div>
+    </div>
+  </div>
+
+  <!-- CATEGORY SECTION -->
+  <div class="section-head">
+    <h2>ໝວດໝູ່ແນະນຳ</h2>
+    <div class="see-all" id="catShowAll">ເບິ່ງທັງໝົດ</div>
+  </div>
+
+  <div class="cat-card is-active" data-category="all">
+    <video class="cat-card-media" src="cat-all.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <h3 class="shine-text">ທັງໝົດ</h3>
+    <p>ເບິ່ງສິນຄ້າທຸກໝວດໝູ່ (30 ລາຍການ)</p>
+  </div>
+  <div class="cat-card" data-category="ໝວດໝູ່ 1">
+    <video class="cat-card-media" src="cat-1.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <h3 class="shine-text">ໝວດໝູ່ 1</h3>
+    <p>ຄລິກເພື່ອເບິ່ງສິນຄ້າໃນໝວດນີ້</p>
+  </div>
+  <div class="cat-card" data-category="ໝວດໝູ່ 2">
+    <video class="cat-card-media" src="cat-2.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <h3 class="shine-text">ໝວດໝູ່ 2</h3>
+    <p>ຄລິກເພື່ອເບິ່ງສິນຄ້າໃນໝວດນີ້</p>
+  </div>
+  <div class="cat-card" data-category="ໝວດໝູ່ 3">
+    <video class="cat-card-media" src="cat-3.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <h3 class="shine-text">ໝວດໝູ່ 3</h3>
+    <p>ຄລິກເພື່ອເບິ່ງສິນຄ້າໃນໝວດນີ້</p>
+  </div>
+
+  <!-- PRODUCT CARDS (ໂຫຼດອັດຕະໂນມັດຈາກຖານຂໍ້ມູນ) -->
+  <div class="section-head">
+    <h2>ສິນຄ້າແນະນຳ</h2>
+    <div class="see-all">ເບິ່ງເພີ່ມເຕີມ</div>
+  </div>
+
+  <div id="productGrid">
+    <div class="empty-note" id="productGridEmpty">ກຳລັງໂຫຼດສິນຄ້າ...</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="menu.js"></script>
+<script src="script.js"></script>
+<script src="live-banner.js"></script>
+</body>
+</html>

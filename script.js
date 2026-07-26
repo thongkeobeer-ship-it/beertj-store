@@ -246,13 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ບັງຄັບເລ່ນວິດີໂອຫນ້າຫຼັກ
   forceHeroVideoAutoplay();
 
-  // ປຸ່ມເມນູ (ແຮມເບີເກີ)
-  const menuBtn = document.querySelector('.menu-btn');
-  if(menuBtn){
-    menuBtn.addEventListener('click', () => {
-      showToast('ເປີດເມນູ (ໃສ່ໂຄ້ດເມນູຂອງທ່ານຢູ່ບ່ອນນີ້)');
-    });
-  }
+  // ໝາຍເຫດ: ປຸ່ມເມນູ (ແຮມເບີເກີ) ຖືກຈັດການໂດຍ menu.js ແລ້ວ (ເປີດ/ປິດເມນູຈິງ)
 
   // ປຸ່ມ CTA ຫຼັກ/ຮອງ
   const topupBtn = document.getElementById('ctaTopupBtn');
