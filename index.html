@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ==== Security headers ທີ່ພໍເຮັດໄດ້ຜ່ານ meta tag ເທົ່ານັ້ນ (GitHub Pages ບໍ່ໃຫ້ຕັ້ງ HTTP header ເອງໄດ້) ====
+     ໝາຍເຫດ: X-Frame-Options / X-Content-Type-Options / Permissions-Policy ຕັ້ງຜ່ານ meta ບໍ່ໄດ້ຕາມ spec
+     ຕ້ອງໃຊ້ host ທີ່ຕັ້ງ HTTP header ເອງໄດ້ (ເບິ່ງລາຍລະອຽດໃນແຊັດ) ຈຶ່ງຈະໄດ້ຄົບ -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net; frame-ancestors 'self'; base-uri 'self'; form-action 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-site-title>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</title>
 <link rel="stylesheet" href="style.css">
 <style>
@@ -356,7 +361,7 @@
       </a>
     </div>
     <div class="footer-note">
-      ⓒ 2026 <span data-site-name>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</span> — ສະຫງວນລິຂະສິດ<br>
+      ⓒ 2026 <span data-site-name>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</span> — <br>
       ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ: [ໃສ່ Line ID / ເບີໂທ / Facebook ຂອງຮ້ານທ່ານທີ່ນີ້]
     </div>
   </div>
