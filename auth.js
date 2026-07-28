@@ -143,10 +143,14 @@ function injectWalletStyles() {
 }
 
 // ອັບເດດປຸ່ມ/ຂໍ້ຄວາມໃນແຖບເມນູໃຫ້ກົງກັບສະຖານະເຂົ້າສູ່ລະບົບ
-// ຕ້ອງມີ element id="authSlot" ຢູ່ໃນໜ້ານັ້ນໆ
+// ຕ້ອງມີ element id="authSlot" ຢູ່ໃນໜ້ານັ້ນໆ (ຍອດເງິນ + ປຸ່ມແອດມິນ ຈະຢູ່ບ່ອນນີ້)
+// ຖ້າໜ້ານັ້ນມີ element id="userChipRow" ດ້ວຍ (ເຊັ່ນ index.html) -> ຊິບໂປຣໄຟລ໌ (avatar + ອອກຈາກລະບົບ)
+// ຈະຖືກຍ້າຍໄປໂຊວ໌ຢູ່ບ່ອນນັ້ນແທນ ເພື່ອບໍ່ໃຫ້ navbar ແອອັດ. ຖ້າບໍ່ມີ userChipRow (ໜ້າອື່ນໆ)
+// ຊິບໂປຣໄຟລ໌ຈະຄືນໄປໂຊວ໌ຢູ່ໃນ authSlot ຄືເກົ່າ.
 async function renderAuthUI() {
   const user = await getCurrentUser();
   const authSlot = document.getElementById('authSlot');
+  const userChipRow = document.getElementById('userChipRow');
 
   // ຄຸມ Google OAuth ຫຼືກໍລະນີອື່ນທີ່ session ຖືກສ້າງໂດຍບໍ່ໄດ້ຜ່ານ signIn()/signUp() ຂ້າງເທິງ
   if (user && !alreadyDiscordNotified(user.id)) {
@@ -180,9 +184,7 @@ async function renderAuthUI() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg>
         </button>` : '';
 
-    authSlot.innerHTML = `
-      ${walletChipHtml}
-      ${adminBtnHtml}
+    const userChipHtml = `
       <div class="user-chip" id="userChip">
         <div class="user-avatar">${initial}</div>
         <svg class="chip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -195,6 +197,16 @@ async function renderAuthUI() {
         </button>
       </div>
     `;
+
+    // ຍອດເງິນ + ປຸ່ມແອດມິນ -> ຢູ່ໃນ navbar ສະເໝີ
+    authSlot.innerHTML = `${walletChipHtml}${adminBtnHtml}`;
+
+    // ຊິບໂປຣໄຟລ໌ (avatar) -> ຖ້າມີ userChipRow ໃຫ້ໄປໂຊວ໌ບ່ອນນັ້ນ, ຖ້າບໍ່ມີໃຫ້ຄືນໄປໃສ່ໃນ authSlot ຄືເກົ່າ
+    if (userChipRow) {
+      userChipRow.innerHTML = userChipHtml;
+    } else {
+      authSlot.insertAdjacentHTML('beforeend', userChipHtml);
+    }
 
     const userChip = document.getElementById('userChip');
     const logoutMenu = document.getElementById('logoutMenu');
@@ -220,6 +232,7 @@ async function renderAuthUI() {
         ເຂົ້າສູ່ລະບົບ
       </a>
     `;
+    if (userChipRow) userChipRow.innerHTML = '';
   }
 }
 
