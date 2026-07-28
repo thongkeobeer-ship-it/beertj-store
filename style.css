@@ -2668,3 +2668,151 @@ body.menu-open{overflow:hidden;}
 .footer-social a svg{width:18px;height:18px;stroke:currentColor;}
 .footer-note{font-size:11px;color:var(--ink-500);line-height:1.8;padding-bottom:8px;}
 .footer-note a{color:var(--shine-dim);text-decoration:none;}
+
+/* ============================================================
+   INTRO / SPLASH — ໜ້າຈໍເປີດຕົວຄັ້ງດຽວຕອນເປີດເວັບ (index.html ເທົ່ານັ້ນ)
+   ຄວບຄຸມໂດຍ intro.js — ບໍ່ກ່ຽວກັບ scroll-reveal ຂອງ .cat-card / .product-card ຂ້າງເທິງ
+============================================================ */
+
+.intro-splash{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(139,92,246,0.12), transparent 55%),
+    linear-gradient(180deg, #140b26 0%, #0a0614 55%, #060410 100%);
+  transition:opacity .6s ease, visibility .6s ease;
+}
+.intro-splash.is-done{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.intro-logo-wrap{
+  position:relative;
+  width:96px;
+  height:96px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.intro-logo-wrap::before{
+  content:"";
+  position:absolute;
+  inset:-46px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(180,120,255,0.4) 0%, rgba(180,120,255,0) 72%);
+  filter:blur(6px);
+  opacity:0;
+  transform:scale(0.6);
+  transition:opacity 1s ease, transform 1s ease;
+  pointer-events:none;
+}
+.intro-logo{
+  position:relative;
+  width:88px;
+  height:88px;
+  object-fit:contain;
+  opacity:0;
+  transform:scale(0.55);
+  filter:drop-shadow(0 0 0 rgba(180,120,255,0));
+  transition:
+    opacity .9s cubic-bezier(.2,.9,.25,1),
+    transform .9s cubic-bezier(.2,.9,.25,1),
+    filter .9s ease;
+}
+.intro-logo-shine{
+  position:absolute;
+  inset:-2px;
+  overflow:hidden;
+  border-radius:14px;
+  pointer-events:none;
+}
+.intro-logo-shine::after{
+  content:"";
+  position:absolute;
+  top:0; left:-60%;
+  width:35%; height:100%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,0.8), transparent);
+  transform:skewX(-18deg);
+  opacity:0;
+}
+
+.intro-splash.intro-logo-in .intro-logo{
+  opacity:1;
+  transform:scale(1);
+  filter:drop-shadow(0 0 20px rgba(180,120,255,0.6)) drop-shadow(0 0 40px rgba(139,92,246,0.25));
+}
+.intro-splash.intro-logo-in .intro-logo-wrap::before{
+  opacity:1;
+  transform:scale(1);
+}
+.intro-splash.intro-logo-in .intro-logo-shine::after{
+  animation:introShineSweep .85s ease .55s 1;
+}
+@keyframes introShineSweep{
+  0%{ opacity:0; left:-60%; }
+  18%{ opacity:.95; }
+  62%{ opacity:.95; }
+  100%{ opacity:0; left:130%; }
+}
+
+/* ==== ອົງປະກອບຂອງໜ້າຫຼັກ: ເລີ່ມຕົ້ນຖືກເຊື່ອງ/ຍ້າຍຕຳແໜ່ງໄວ້ ຕອນ body ຍັງມີ .intro-active ==== */
+body.intro-active .navbar{ opacity:0; transform:translateY(-34px); }
+body.intro-active .menu-btn{ opacity:0; transform:translateX(26px); }
+body.intro-active .hero h1{ opacity:0; transform:translateY(18px); }
+body.intro-active .hero p[data-site-tagline]{ opacity:0; transform:translateY(14px); }
+body.intro-active .media-slot.has-photo{ opacity:0; transform:translateX(-64px) scale(0.86); }
+body.intro-active .cta-row .btn{ opacity:0; transform:translateY(28px); box-shadow:none; }
+
+.navbar{
+  transition:opacity .7s cubic-bezier(.2,.85,.25,1), transform .7s cubic-bezier(.2,.85,.25,1);
+}
+.menu-btn{
+  transition:
+    opacity .55s cubic-bezier(.2,.85,.25,1) .18s,
+    transform .55s cubic-bezier(.2,.85,.25,1) .18s,
+    border-color .2s ease, background .2s ease;
+}
+.hero h1{
+  transition:opacity .7s ease .1s, transform .7s cubic-bezier(.2,.85,.25,1) .1s;
+}
+.hero p[data-site-tagline]{
+  transition:opacity .7s ease .22s, transform .7s cubic-bezier(.2,.85,.25,1) .22s;
+}
+.media-slot.has-photo{
+  transition:opacity .8s ease .05s, transform .8s cubic-bezier(.18,.85,.3,1) .05s;
+}
+.cta-row .btn{
+  transition:opacity .6s cubic-bezier(.32,1.3,.4,1), transform .6s cubic-bezier(.32,1.3,.4,1), box-shadow .5s ease;
+}
+.cta-row .btn:nth-child(1){ transition-delay:.4s; }
+.cta-row .btn:nth-child(2){ transition-delay:.5s; }
+
+body.intro-page-in .navbar{ opacity:1; transform:translateY(0); }
+body.intro-page-in .menu-btn{ opacity:1; transform:translateX(0); }
+body.intro-page-in .hero h1{ opacity:1; transform:translateY(0); }
+body.intro-page-in .hero p[data-site-tagline]{ opacity:1; transform:translateY(0); }
+body.intro-page-in .media-slot.has-photo{ opacity:1; transform:translateX(0) scale(1); }
+body.intro-page-in .cta-row .btn{
+  opacity:1;
+  transform:translateY(0);
+}
+body.intro-page-in .cta-row .btn-primary{ box-shadow:0 0 24px -4px rgba(139,92,246,0.55), 0 8px 24px rgba(139,92,246,0.13); }
+body.intro-page-in .cta-row .btn-secondary{ box-shadow:0 0 18px -6px rgba(139,92,246,0.4); }
+
+@media (prefers-reduced-motion: reduce){
+  .intro-splash{ display:none !important; }
+  body.intro-active .navbar,
+  body.intro-active .menu-btn,
+  body.intro-active .hero h1,
+  body.intro-active .hero p[data-site-tagline],
+  body.intro-active .media-slot.has-photo,
+  body.intro-active .cta-row .btn{
+    opacity:1 !important; transform:none !important; box-shadow:none !important;
+  }
+}
