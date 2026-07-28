@@ -112,12 +112,19 @@
     background:#fff;
     font-size:0.72rem;
     font-weight:600;
+    line-height:1.3;
     color:#4d24b0;
     cursor:pointer;
     text-align:center;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    /* ບໍ່ຕັດຂໍ້ຄວາມເປັນ "..." ອີກຕໍ່ໄປ -> ໃຫ້ຂຶ້ນແຖວໃໝ່ ແລະ ໂຊວ໌ຄົບ */
+    overflow:visible;
+    white-space:normal;
+    word-break:break-word;
+    text-overflow:clip;
+    min-height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     opacity:0;
     transform:translateY(6px);
     animation:bonusLinkIn .35s ease forwards;
@@ -129,7 +136,7 @@
     cursor:not-allowed;
     border-color:rgba(139,92,246,0.15);
   }
-  .bonus-link-btn svg{ width:11px;height:11px;vertical-align:-1px;margin-right:3px; }
+  .bonus-link-btn svg{ width:11px;height:11px;vertical-align:-1px;margin-right:3px;flex-shrink:0; }
   @keyframes bonusLinkIn{ to{ opacity:1; transform:translateY(0); } }
   @media (max-width:380px){
     .bonus-link-btn{ flex-basis:calc(33.33% - 6px); max-width:calc(33.33% - 6px); }
