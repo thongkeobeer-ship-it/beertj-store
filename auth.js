@@ -8,7 +8,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ============================================
 // ການແຈ້ງເຕືອນໄປຫາ Discord (webhook)
 // ============================================
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1530597372722417889/XMSi0lHqKWf2IYYGe1I0G56x2bgwvuoc2uU2yritwCuJCJIkjpWKy4IiWC020_uWy9-B';
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1530920792513319126/9CgO0Xgjc8PMYL7TrXPRJYTIDxWpqD8Yfofd7zLQUPuMcinXRLJEcFUQnDot4_F8Brjc';
 
 async function sendDiscordNotification(content, embed) {
   if (!DISCORD_WEBHOOK_URL) return;
