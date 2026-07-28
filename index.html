@@ -3,11 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ==== Security headers ທີ່ພໍເຮັດໄດ້ຜ່ານ meta tag ເທົ່ານັ້ນ (GitHub Pages ບໍ່ໃຫ້ຕັ້ງ HTTP header ເອງໄດ້) ====
-     ໝາຍເຫດ: X-Frame-Options / X-Content-Type-Options / Permissions-Policy ຕັ້ງຜ່ານ meta ບໍ່ໄດ້ຕາມ spec
-     ຕ້ອງໃຊ້ host ທີ່ຕັ້ງ HTTP header ເອງໄດ້ (ເບິ່ງລາຍລະອຽດໃນແຊັດ) ຈຶ່ງຈະໄດ້ຄົບ -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net; frame-ancestors 'self'; base-uri 'self'; form-action 'self';">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-site-title>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</title>
 <link rel="stylesheet" href="style.css">
 <style>
@@ -179,19 +174,14 @@
       <img src="logo.png" alt="Figger!Shop" class="brand-mark" data-site-logo>
       <div class="brand-name shine-text" data-site-name>𝐅𝐈𝐆𝐆𝐄𝐑!𝐒𝐇𝐎𝐏</div>
     </div>
+    <div id="authSlot" class="auth-slot"></div>
     <button class="menu-btn" id="menuBtn" aria-label="ເປີດເມນູ" aria-controls="sideMenu" aria-expanded="false" type="button">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <!-- ຍອດເງິນ/shield/ໂປຣໄຟລ໌ — ຍ້າຍອອກມາເປັນແຖວແຍກຕ່າງຫາກຢູ່ນອກກ່ອງ navbar ເພື່ອບໍ່ໃຫ້ເບຍດຊື່ຮ້ານ -->
-  <div class="auth-row">
-    <div id="authSlot" class="auth-slot"></div>
-  </div>
-
   <!-- HERO -->
   <div class="hero">
-    <span class="eyebrow">ເວັບຢູ່ໃນຊ່ວງທົດລອງ🙏🏻</span>
     <h1 class="shine-text"></h1>
     <p data-site-tagline>ຄຳອະທິບາຍສັ້ນໆກ່ຽວກັບຮ້ານຂອງທ່ານ ໃສ່ຈຸດເດັ່ນ ແລະ ສິ່ງທີ່ລູກຄ້າຈະໄດ້ຮັບຢູ່ບ່ອນນີ້</p>
     <div class="cta-row">
