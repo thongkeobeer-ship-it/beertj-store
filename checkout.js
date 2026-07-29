@@ -44,6 +44,7 @@ function renderProduct(p){
   const nameEl = document.getElementById('orderName');
   const metaEl = document.getElementById('orderMeta');
 
+  thumb.classList.toggle('has-image', !!p.image_url);
   thumb.innerHTML = p.image_url
     ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
     : '[ ບໍ່ມີຮູບ ]';
