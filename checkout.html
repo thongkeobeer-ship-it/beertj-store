@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ຢືນຢັນການສັ່ງຊື້</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ຂະຫຍາຍຮູບສິນຄ້າໃຫ້ໃຫຍ່ແບບໜ້າສິນຄ້າ */
+  .order-product{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .order-thumb{
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    border-radius: 20px;
+    font-size: 1.1rem;
+  }
+  .order-info{
+    margin-top: 14px;
+  }
+  #orderNoteInput{
+    overflow-y: hidden;
+    resize: none;
+  }
+
+  /* ===== ຕົວເລືອກໄລຍະເວລາ ===== */
+  .duration-section{
+    display: none;
+  }
+  .duration-section.show{
+    display: block;
+  }
+  .duration-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .duration-pill{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 6px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(56,189,248,0.25);
+    background: var(--navy-800);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color .15s ease, background .15s ease, opacity .15s ease;
+  }
+  .duration-pill .dp-price{
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.7;
+  }
+  .duration-pill.selected{
+    border-color: #3b82f6;
+    background: rgba(56,189,248,0.1);
+    color: #7dd3fc;
+  }
+  .duration-pill.disabled{
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .duration-hint{
+    font-size: 0.85rem;
+    color: #8b93a7;
+    margin: -4px 0 10px;
+  }
+  #orderNoteInput.note-readonly{
+    background: #171a24;
+    color: #8b93a7;
+    cursor: not-allowed;
+  }
+
+  /* ===== ສິນຄ້າຢຸດຂາຍຊົ່ວຄາວ ===== */
+  .paused-banner{
+    display:none;
+    align-items:flex-start;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:14px;
+    background:rgba(255,176,32,0.12);
+    border:1px solid rgba(255,176,32,0.4);
+    color:#ffc266;
+    font-size:0.83rem;
+    line-height:1.55;
+    margin-bottom:16px;
+  }
+  .paused-banner.show{ display:flex; }
+  .paused-banner svg{ width:18px;height:18px;flex-shrink:0;stroke:#ffc266;margin-top:1px; }
+
+  /* ===== ລິ້ງໂບນັດ ===== */
+  .bonus-links-section{ display:none; margin-bottom:18px; }
+  .bonus-links-section.show{ display:block; }
+  .bonus-links-section > label{
+    font-size:0.85rem; color:#b8bfcf; display:block; margin-bottom:6px; font-weight:600;
+  }
+  .bonus-links-hint{ font-size:0.75rem; color:#8b93a7; margin:0 0 10px; }
+  .bonus-links-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .bonus-link-btn{
+    flex:0 0 calc(25% - 6px);
+    max-width:calc(25% - 6px);
+    box-sizing:border-box;
+    padding:9px 8px;
+    border-radius:10px;
+    border:1.5px solid rgba(56,189,248,0.3);
+    background:var(--navy-800);
+    font-size:0.72rem;
+    font-weight:600;
+    line-height:1.3;
+    color:#7dd3fc;
+    cursor:pointer;
+    text-align:center;
+    /* ບໍ່ຕັດຂໍ້ຄວາມເປັນ "..." ອີກຕໍ່ໄປ -> ໃຫ້ຂຶ້ນແຖວໃໝ່ ແລະ ໂຊວ໌ຄົບ */
+    overflow:visible;
+    white-space:normal;
+    word-break:break-word;
+    text-overflow:clip;
+    min-height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transform:translateY(6px);
+    animation:bonusLinkIn .35s ease forwards;
+  }
+  .bonus-link-btn:active{ transform:scale(0.96); }
+  .bonus-link-btn.locked{
+    opacity:0.55 !important;
+    color:#8b93a7;
+    cursor:not-allowed;
+    border-color:rgba(56,189,248,0.15);
+  }
+  .bonus-link-btn svg{ width:11px;height:11px;vertical-align:-1px;margin-right:3px;flex-shrink:0; }
+  @keyframes bonusLinkIn{ to{ opacity:1; transform:translateY(0); } }
+  @media (max-width:380px){
+    .bonus-link-btn{ flex-basis:calc(33.33% - 6px); max-width:calc(33.33% - 6px); }
+  }
+</style>
+</head>
+<body class="page-entering">
+<script src="dna-background.js"></script>
+
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+<div class="wrap">
+
+  <!-- BACK ROW -->
+  <div class="back-row">
+    <button class="back-btn" id="backBtn" aria-label="ກັບຄືນ">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="page-title">ຢືນຢັນການສັ່ງຊື້</h1>
+  </div>
+
+  <!-- PRODUCT SUMMARY -->
+  <div class="order-product" id="orderProduct">
+    <div class="order-thumb" id="orderThumb">[ ຮູບ ]</div>
+    <div class="order-info">
+      <div class="name" id="orderName">ກຳລັງໂຫຼດ...</div>
+      <div class="meta" id="orderMeta">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- PAUSED BANNER -->
+  <div class="paused-banner" id="pausedBanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="pausedBannerText">ສິນຄ້ານີ້ຢຸດຂາຍຊົ່ວຄາວ</span>
+  </div>
+
+  <!-- DURATION OPTIONS (ສະແດງສະເພາະສິນຄ້າທີ່ເປີດໃຊ້) -->
+  <div class="order-note duration-section" id="durationSection">
+    <label>ເລືອກໄລຍະເວລາ</label>
+    <div class="duration-hint" id="durationHint">ກະລຸນາເລືອກໄລຍະເວລາທີ່ຕ້ອງການ</div>
+    <div class="duration-grid" id="durationGrid"></div>
+  </div>
+
+  <!-- BONUS LINKS (ສະແດງສະເພາະສິນຄ້າທີ່ມີລິ້ງໂບນັດ) -->
+  <div class="bonus-links-section" id="bonusLinksSection">
+    <label>ລິ້ງໂບນັດ</label>
+    <div class="bonus-links-hint" id="bonusLinksHint"></div>
+    <div class="bonus-links-grid" id="bonusLinksGrid"></div>
+  </div>
+
+  <!-- QTY STEPPER -->
+  <div class="qty-row">
+    <div class="qty-label">ຈຳນວນ</div>
+    <div class="qty-control">
+      <button class="qty-btn" id="qtyMinus" aria-label="ຫຼຸດຈຳນວນ">−</button>
+      <div class="qty-value" id="qtyValue">1</div>
+      <button class="qty-btn" id="qtyPlus" aria-label="ເພີ່ມຈຳນວນ">+</button>
+    </div>
+  </div>
+
+  <!-- NOTE FIELD -->
+  <div class="order-note">
+    <label for="orderNoteInput" id="orderNoteLabel">ລາຍລະອຽດ</label>
+    <textarea id="orderNoteInput" placeholder="ຕົວຢ່າງ: ຂໍໃຫ້ຫໍ່ແຍກ, ສົ່ງຫຼັງ 18:00, ຂະໜາດ M ..."></textarea>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="order-summary">
+    <div class="summary-row">
+      <span>ລາຄາສິນຄ້າ</span>
+      <span id="sumSubtotal">0 ກີບ</span>
+    </div>
+    <div class="summary-row total">
+      <span>ລວມທັງໝົດ</span>
+      <span class="amount shine-text" id="sumTotal">0 ກີບ</span>
+    </div>
+  </div>
+
+  <!-- CONFIRM BUTTON -->
+  <button class="confirm-btn" id="confirmBtn">
+    ຢືນຢັນການສັ່ງຊື້
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+
+  <div class="order-id" id="orderRef">&nbsp;</div>
+
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+    </div>
+    <h3>ສັ່ງຊື້ສຳເລັດແລ້ວ</h3>
+    <p id="successText">ຮ້ານໄດ້ຮັບຄຳສັ່ງຊື້ຂອງທ່ານແລ້ວ ຈະຕິດຕໍ່ກັບໄປໄວໆນີ້</p>
+    <button class="success-close" id="successClose">ປິດ</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="checkout.js"></script>
+</body>
+</html>
