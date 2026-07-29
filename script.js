@@ -1,0 +1,500 @@
+// ສະຄຣິບຫຼັກຂອງໜ້າຮ້ານ — ໂຫຼດສິນຄ້າຈາກ Supabase ເທົ່ານັ້ນ
+// (ບໍ່ມີສິນຄ້າຕົວຢ່າງອີກຕໍ່ໄປ — ຈະສະແດງກໍ່ຕໍ່ເມື່ອແອດມິນເພີ່ມສິນຄ້າຈິງເຂົ້າມາ)
+
+let allProducts = [];      // ສິນຄ້າທັງໝົດທີ່ໂຫຼດມາຈາກຖານຂໍ້ມູນຈິງ
+let currentCategory = 'all';
+
+function showToast(message){
+  let toast = document.querySelector('.toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ໃຊ້ ກີບ ໃຫ້ຄືກັນກັບ checkout.js / admin.js (ບໍ່ໃຊ້ ฿ / th-TH ອີກຕໍ່ໄປ)
+function formatKip(n){
+  return Number(n || 0).toLocaleString('en-US') + ' ກີບ';
+}
+
+function productCardHtml(p){
+  const img = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+    : `[ ບໍ່ມີຮູບສິນຄ້າ ]`;
+
+  const outOfStock = (p.stock || 0) <= 0;
+  const isPaused = !!p.paused;
+  const buyDisabled = outOfStock || isPaused;
+
+  // ສະຖານະ: ຢຸດຂາຍຊົ່ວຄາວ > ສິນຄ້າໝົດ > ພ້ອມສົ່ງ (ຄືກັນກັບ paused-banner ຂອງ checkout.js)
+  let statusText = 'ພ້ອມສົ່ງ';
+  if (isPaused) statusText = 'ຢຸດຂາຍຊົ່ວຄາວ';
+  else if (outOfStock) statusText = 'ສິນຄ້າໝົດ';
+
+  // ສິນຄ້າແບບເລືອກໄລຍະເວລາ (duration_enabled) ບໍ່ມີ price ດຽວ -> ໂຊວ໌ "ເລີ່ມຕົ້ນ" ຈາກລາຄາຕ່ຳສຸດ
+  const priceHtml = p.duration_enabled
+    ? `<div class="price shine-text">ເລີ່ມຕົ້ນ ${formatKip(p.minPrice)}</div>`
+    : `<div class="price shine-text">${formatKip(p.price)}</div>`;
+
+  // ປ້າຍ "ໃໝ່" ຖືກປ່ຽນເປັນຈຳນວນຂາຍແລ້ວແບບອັດຕະໂນມັດ (ຄິດຈາກອໍເດີທີ່ status = paid)
+  const soldCount = p.soldCount || 0;
+
+  return `
+  <div class="product-card ${isPaused ? 'is-paused' : ''}" data-id="${p.id}">
+    <div class="product-media">
+      <div class="badge-row">
+        <span class="badge badge-new badge-sold">ຂາຍແລ້ວ ${soldCount} ຊິ້ນ</span>
+      </div>
+      ${img}
+    </div>
+    <div class="product-body">
+      <div class="product-eyebrow">${p.category || 'ໝວດໝູ່ສິນຄ້າ'}</div>
+      <div class="product-title">${p.name}</div>
+      <div class="product-status"><span class="live-dot"></span> ${statusText}</div>
+      <div class="product-footer">
+        ${priceHtml}
+        <div class="stock">ຄົງເຫຼືອ ${p.stock || 0}</div>
+      </div>
+      <button class="buy-btn" ${buyDisabled ? 'disabled' : ''}>ສັ່ງຊື້ <span>→</span></button>
+    </div>
+  </div>`;
+}
+
+// ນັບຈຳນວນທີ່ຂາຍແລ້ວຈິງຂອງສິນຄ້າ (ລວມ quantity ຈາກທຸກອໍເດີທີ່ status = paid)
+async function getSoldCount(productId){
+  if (typeof supabaseClient === 'undefined') return 0;
+  const { data, error } = await supabaseClient
+    .from('orders')
+    .select('quantity')
+    .eq('product_id', productId)
+    .eq('status', 'paid');
+  if (error) { console.error(error); return 0; }
+  return (data || []).reduce((sum, o) => sum + (o.quantity || 0), 0);
+}
+
+async function loadStoreProducts(){
+  const grid = document.getElementById('productGrid');
+  if (!grid) return;
+
+  let products = null;
+  let error = null;
+
+  if (typeof supabaseClient !== 'undefined') {
+    const res = await supabaseClient
+      .from('products')
+      .select('*')
+      .eq('archived', false)   // ສິນຄ້າທີ່ແອດມິນເອົາອອກ (archived) ຕ້ອງບໍ່ໂຊວ໌ໃນໜ້າຮ້ານ
+      .order('created_at', { ascending: false });
+    products = res.data;
+    error = res.error;
+  }
+
+  if (error) {
+    console.error(error);
+  }
+
+  if (!products || !products.length) {
+    // ຍັງບໍ່ມີສິນຄ້າຈິງໃນຖານຂໍ້ມູນ -> ປ່ອຍວ່າງໄວ້ (ບໍ່ໃຊ້ສິນຄ້າຕົວຢ່າງອີກຕໍ່ໄປ)
+    allProducts = [];
+  } else {
+    const withStock = await Promise.all(products.map(async (p) => {
+      // ສິນຄ້າແບບເລືອກໄລຍະເວລາ: ສະຕັອກ ແລະ ລາຄາຕ້ອງຄິດຈາກ product_durations (ຄືກັນກັບ checkout.js)
+      if (p.duration_enabled) {
+        const { data: durations, error: durError } = await supabaseClient
+          .from('product_durations')
+          .select('*')
+          .eq('product_id', p.id)
+          .order('sort_order', { ascending: true });
+        if (durError) console.error(durError);
+
+        const durationsWithStock = await Promise.all((durations || []).map(async (d) => {
+          const { data: dStock } = await supabaseClient.rpc('product_duration_stock', { p_duration_id: d.id });
+          return { ...d, stock: dStock ?? 0 };
+        }));
+
+        const totalStock = durationsWithStock.reduce((sum, d) => sum + (d.stock || 0), 0);
+        const minPrice = durationsWithStock.length
+          ? Math.min(...durationsWithStock.map(d => d.price || 0))
+          : 0;
+        const soldCount = await getSoldCount(p.id);
+
+        return { ...p, stock: totalStock, minPrice, soldCount };
+      }
+
+      const [{ data: stock }, soldCount] = await Promise.all([
+        supabaseClient.rpc('product_stock', { p_product_id: p.id }),
+        getSoldCount(p.id),
+      ]);
+      return { ...p, stock: stock ?? 0, soldCount };
+    }));
+    allProducts = withStock;
+  }
+
+  buildCategoryFilter();
+  renderProducts(currentCategory);
+}
+
+function buildCategoryFilter(){
+  const catCards = document.querySelectorAll('.cat-card');
+  catCards.forEach(card => {
+    if (card.dataset.bound) return;
+    card.dataset.bound = '1';
+    card.addEventListener('click', () => {
+      const cat = card.dataset.category || 'all';
+      currentCategory = cat;
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('is-active'));
+      card.classList.add('is-active');
+      renderProducts(currentCategory);
+      const title = card.querySelector('h3')?.textContent || 'ໝວດໝູ່';
+      showToast(`ກຳລັງສະແດງ: ${title}`);
+    });
+  });
+
+  const showAllBtn = document.getElementById('catShowAll');
+  if (showAllBtn && !showAllBtn.dataset.bound) {
+    showAllBtn.dataset.bound = '1';
+    showAllBtn.addEventListener('click', () => {
+      currentCategory = 'all';
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('is-active'));
+      document.querySelector('.cat-card[data-category="all"]')?.classList.add('is-active');
+      renderProducts('all');
+    });
+  }
+}
+
+function renderProducts(category){
+  const grid = document.getElementById('productGrid');
+  if (!grid) return;
+
+  const filtered = (category && category !== 'all')
+    ? allProducts.filter(p => p.category === category)
+    : allProducts;
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີສິນຄ້າ — ແອດມິນຍັງບໍ່ໄດ້ເພີ່ມສິນຄ້າ</div>';
+    updateStatCounts(allProducts.length, allProducts.reduce((s, p) => s + (p.stock || 0), 0));
+    return;
+  }
+
+  grid.innerHTML = filtered.map(productCardHtml).join('');
+  updateStatCounts(allProducts.length, allProducts.reduce((s, p) => s + (p.stock || 0), 0));
+  attachProductCardBehaviors(filtered);
+}
+
+function updateStatCounts(productCount, stockCount){
+  const pEl = document.getElementById('statProductCount');
+  const sEl = document.getElementById('statStockCount');
+  if (pEl) pEl.textContent = productCount;
+  if (sEl) sEl.textContent = stockCount;
+}
+
+function attachProductCardBehaviors(products){
+  const productCards = document.querySelectorAll('#productGrid .product-card');
+
+  // ປຸ່ມສັ່ງຊື້ -> ຕ້ອງເຂົ້າສູ່ລະບົບກ່ອນຈຶ່ງຈະໄປໜ້າຢືນຢັນການສັ່ງຊື້ໄດ້
+  // (ປຸ່ມຖືກ disabled ໄປແລ້ວສຳລັບສິນຄ້າໝົດ/ຢຸດຂາຍຊົ່ວຄາວ ຈຶ່ງບໍ່ຕິດ handler ນີ້)
+  productCards.forEach(card => {
+    const btn = card.querySelector('.buy-btn');
+    if (!btn || btn.disabled) return;
+    btn.addEventListener('click', async () => {
+      const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
+      if (!user) {
+        showToast('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນສັ່ງຊື້');
+        window.location.href = 'login.html?redirect=index.html';
+        return;
+      }
+      const id = card.dataset.id;
+      goToCheckout(card, id);
+    });
+  });
+
+  // === ກາດສິນຄ້າ: ເອັບເຟັກເຂົ້າສາກແບບ fade + slide-up ທີລະໃບ ເມື່ອເລື່ອນລົງມາເຫັນ ===
+  revealCardsOnScroll(productCards);
+}
+
+// ===== ອານິເມຊັນຕອນກົດ "ສັ່ງຊື້": ປຸ່ມ+ຊື່+ລາຄາຮ່ວງລົງ, ສະຖານະ/ຄົງເຫຼືອເລື່ອນອອກຄົນລະທາງ,
+//       ແລ້ວທັງໜ້າຄ່ອຍໆຈາງອອກ ກ່ອນຈະໄປໜ້າຢືນຢັນການສັ່ງຊື້ (checkout.html ຈະຈາງເຂົ້າມາເອງ) =====
+const BUY_ANIM_FALL_DELAY = 90;     // ຊື່ + ລາຄາ ເລີ່ມຮ່ວງຊ້າກວ່າປຸ່ມໜ້ອຍໜຶ່ງ ໃຫ້ເປັນຈັງຫວະ
+const BUY_ANIM_PAGE_FADE_AT = 420;  // ຄ້າງໄວ້ໃຫ້ເຫັນການ໌ດຮ່ວງ/ເລື່ອນກ່ອນ ຄ່ອຍເລີ່ມຈາງທັງໜ້າ
+const BUY_ANIM_PAGE_FADE_MS = 460;  // ຕ້ອງກົງກັບໄລຍະເວລາຂອງ @keyframes pageFadeOut ໃນ style.css
+
+function goToCheckout(card, productId){
+  const targetUrl = 'checkout.html?id=' + encodeURIComponent(productId);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (prefersReducedMotion) {
+    window.location.href = targetUrl;
+    return;
+  }
+
+  const btn = card.querySelector('.buy-btn');
+  const title = card.querySelector('.product-title');
+  const price = card.querySelector('.price');
+  const status = card.querySelector('.product-status');
+  const stock = card.querySelector('.stock');
+
+  // ກັນກົດຊ້ຳ / ກັນກົດປຸ່ມອື່ນຂະນະທີ່ກຳລັງຈະປ່ຽນໜ້າ (ໝາຍປຸ່ມທີ່ຕົນເອງປິດໄວ້ດ້ວຍ class
+  // ເພື່ອໃຫ້ pageshow ຮູ້ວ່າຕ້ອງເປີດຄືນສະເພາະປຸ່ມໃດ ຖ້າຜູ້ໃຊ້ກົດຍ້ອນກັບມາຈາກ bfcache)
+  document.querySelectorAll('.buy-btn:not([disabled])').forEach(b => {
+    b.disabled = true;
+    b.classList.add('temp-disabled');
+  });
+  const grid = document.getElementById('productGrid');
+  if (grid) grid.style.pointerEvents = 'none';
+
+  if (btn) btn.classList.add('is-falling');
+  if (status) status.classList.add('is-sliding-left');   // "ພ້ອມສົ່ງ" -> ເລື່ອນໄປຊ້າຍ
+  if (stock) stock.classList.add('is-sliding-right');    // "ຄົງເຫຼືອ" -> ເລື່ອນໄປຂວາ
+
+  window.setTimeout(() => {
+    if (title) title.classList.add('is-falling');
+    if (price) price.classList.add('is-falling');
+  }, BUY_ANIM_FALL_DELAY);
+
+  window.setTimeout(() => {
+    document.body.classList.add('page-leaving');
+  }, BUY_ANIM_PAGE_FADE_AT);
+
+  window.setTimeout(() => {
+    window.location.href = targetUrl;
+  }, BUY_ANIM_PAGE_FADE_AT + BUY_ANIM_PAGE_FADE_MS);
+}
+
+// ຖ້າຜູ້ໃຊ້ກົດຍ້ອນກັບມາໜ້ານີ້ (bfcache) ຫຼັງຈາກໜ້າເຄີຍຈາງອອກໄປ -> ຕ້ອງລ້າງ class ອອກ
+// ບໍ່ດັ່ງນັ້ນໜ້າຈະຄ້າງໂປ່ງໃສ (opacity 0) ຕອນກົດຍ້ອນກັບ
+window.addEventListener('pageshow', () => {
+  document.body.classList.remove('page-leaving');
+  document.querySelectorAll('.buy-btn.is-falling').forEach(b => b.classList.remove('is-falling'));
+  document.querySelectorAll('.is-sliding-left, .is-sliding-right').forEach(el => {
+    el.classList.remove('is-sliding-left', 'is-sliding-right');
+  });
+  const grid = document.getElementById('productGrid');
+  if (grid) grid.style.pointerEvents = '';
+  document.querySelectorAll('.buy-btn.temp-disabled').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('temp-disabled');
+  });
+});
+
+// ຄ່າຄວບຄຸມໄລຍະ scroll: ໃບຈະເລີ່ມເຫັນ(progress 0)ຕອນຂອບເທິງຂອງມັນຢູ່ທີ່ 92% ຄວາມສູງຈໍ (ໃກ້ລຸ່ມສຸດ)
+// ແລ້ວເລື່ອນຈົນເຕັມ(progress 1)ຕອນຂອບເທິງຂອງມັນຂຶ້ນມາເຖິງ 55% ຄວາມສູງຈໍ (ເກືອບກາງຈໍ)
+const REVEAL_START_VH = 0.92;
+const REVEAL_END_VH = 0.55;
+const REVEAL_MAX_SHIFT_Y = 60; // px ທີ່ໂຜ່ຂຶ້ນມາຈາກທາງລຸ່ມ (scroll ລົງ) / ຫຼົ່นກັບລົງ (scroll ຂຶ້ນ)
+let revealListenersInitialized = false;
+let revealTicking = false;
+
+function computeRevealProgress(card){
+  const rect = card.getBoundingClientRect();
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+  const startPoint = vh * REVEAL_START_VH;
+  const endPoint = vh * REVEAL_END_VH;
+  let progress = (startPoint - rect.top) / (startPoint - endPoint);
+  if (progress < 0) progress = 0;
+  if (progress > 1) progress = 1;
+  return progress;
+}
+
+// ບອກ browser ໃຫ້ໃຊ້ subpixel/GPU compositing (translate3d) ເພື່ອຄວາມນຸ້ມນວນ ບໍ່ກະຕຸກ
+function updateRevealCard(card){
+  const progress = computeRevealProgress(card);
+  const shiftY = REVEAL_MAX_SHIFT_Y * (1 - progress);
+  const scale = 0.97 + progress * 0.03;
+
+  card.style.opacity = String(progress);
+  card.style.transform = `translate3d(0, ${shiftY.toFixed(2)}px, 0) scale(${scale.toFixed(3)})`;
+}
+
+// ຄິດໄລ່ໃໝ່ໝົດທຸກ card ທີ່ຢູ່ໃນໜ້າ ณ ຂະນະນັ້ນ (query ສົດທຸກຄັ້ງ ບໍ່ເກັບ reference ເກົ່າໄວ້
+// -> ຮອງຮັບກໍລະນີ card ຖືກສ້າງໃໝ່ຈາກການປ່ຽນໝວດໝູ່ / ອັບເດດສິນຄ້າ ໂດຍບໍ່ຕ້ອງຕິດ listener ຊ້ຳຊ້ອນ)
+function updateAllRevealCards(){
+  document.querySelectorAll('.cat-card, .product-card').forEach(updateRevealCard);
+  revealTicking = false;
+}
+
+function onRevealScrollOrResize(){
+  if (!revealTicking) {
+    revealTicking = true;
+    requestAnimationFrame(updateAllRevealCards);
+  }
+}
+
+// === reveal ທົ່ວໄປ: ໃຫ້ card (ສິນຄ້າ ຫຼື ໝວດໝູ່) ໂຜ່ຂຶ້ນມາຈາກທາງລຸ່ມຕິດກັບຕຳແໜ່ງ scroll ໂດຍກົງ (scroll-linked) ===
+// ເລື່ອນລົງ -> card ໂຜ່ຂຶ້ນມາຈາກລຸ່ມ, ເລື່ອນຂຶ້ນ -> card ຫຼົ່ນກັບລົງລຸ່ມສວຍໆ (ທິດທາງດຽວກັນທັງໝົດ ບໍ່ມີຊ້າຍ/ຂວາອີກຕໍ່ໄປ)
+// ຄວາມໄວການເລື່ອນ = ຄວາມໄວ card: ເລື່ອນຊ້າ card ມາຊ້າ, ເລື່ອນໄວ card ມາໄວ — ບໍ່ມີ blur
+// ໝາຍເຫດສຳຄັນ: ບໍ່ໃຊ້ CSS transition/animation ອີກຕໍ່ໄປ — opacity ແລະ ຕຳແໜ່ງ ຖືກຄິດໄລ່ຈາກ
+// ຕຳແໜ່ງ scroll ຈິງໆ ທຸກຄັ້ງທີ່ scroll event ຍິງ (1:1 ກັບການເລື່ອນ). ດັ່ງນັ້ນ ຖ້າຜູ້ໃຊ້ຢຸດເລື່ອນ
+// card ຈະຢຸດຄ້າງທັນທີບ່ອນທີ່ມັນຢູ່ (ບໍ່ວ່າຈະຄ້າງເຄິ່ງທາງຫຼືບ່ອນໃດກໍ່ຕາມ) ແລະຖ້າເລື່ອນຕໍ່ ມັນກໍ່ຈະຕິດຕາມທັນທີ
+// ບໍ່ມີ animation ໃດແລ່ນຕໍ່ໄປເອງຫຼັງຈາກຢຸດເລື່ອນ. Listener ຖືກຕິດຄັ້ງດຽວທົ່ວທັງໜ້າ (query ສົດທຸກເຟຣມ)
+// ເພື່ອບໍ່ໃຫ້ listener ພອກພູນຂຶ້ນເລື່ອຍໆເມື່ອສິນຄ້າຖືກ render ໃໝ່ (ປ່ຽນໝວດໝູ່ / ອັບເດດສົດ)
+function revealCardsOnScroll(cards){
+  const cardList = Array.from(cards);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (prefersReducedMotion) {
+    cardList.forEach(card => {
+      card.style.transition = 'none';
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+    });
+    return;
+  }
+
+  cardList.forEach(card => {
+    card.style.transition = 'none'; // ບໍ່ໃສ່ transition ໃດໆ -> ຕິດກັບ scroll ຈິງ 1:1 ທັນທີ, ບໍ່ກະຕຸກ
+  });
+
+  if (!revealListenersInitialized) {
+    revealListenersInitialized = true;
+    window.addEventListener('scroll', onRevealScrollOrResize, { passive: true });
+    window.addEventListener('resize', onRevealScrollOrResize);
+  }
+
+  // ຄິດໄລ່ຄ່າເລີ່ມຕົ້ນທັນທີສຳລັບໃບໃໝ່ (ບໍ່ຕ້ອງລໍ scroll event ທຳອິດ)
+  cardList.forEach(updateRevealCard);
+}
+
+// === ບັງຄັບໃຫ້ວິດີໂອຫນ້າຫຼັກເລ່ນອັດຕະໂນມັດ ແລະ ວົນຊ້ຳໂດຍບໍ່ຕ້ອງກົດ ===
+function forceHeroVideoAutoplay(){
+  const heroVideo = document.querySelector('.media-photo');
+  if (!heroVideo) return;
+
+  heroVideo.muted = true;
+  heroVideo.defaultMuted = true;
+  heroVideo.playsInline = true;
+  heroVideo.loop = true;
+
+  const tryPlay = () => {
+    const playPromise = heroVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // browser ບລັອກ autoplay -> ຈະລອງເລ່ນອີກຄັ້ງທັນທີທີ່ຜູ້ໃຊ້ແຕະຫນ້າຈໍ (ບໍ່ຕ້ອງມີປຸ່ມ play ໃຫ້ກົດ)
+      });
+    }
+  };
+
+  // ລອງເລ່ນທັນທີທີ່ script ໂຫຼດ
+  tryPlay();
+
+  // ລອງອີກຄັ້ງເມື່ອວິດີໂອພ້ອມຫຼິ້ນ (ບາງ browser ຕ້ອງລໍຖ້າ metadata/data ໂຫຼດກ່ອນ)
+  heroVideo.addEventListener('loadedmetadata', tryPlay);
+  heroVideo.addEventListener('canplay', tryPlay);
+
+  // ເນັດກັນຫລຸດ: ຖ້າ browser ຍັງບລັອກຢູ່ ໃຫ້ເລ່ນທັນທີທີ່ມີການແຕະ/ຄລິກຄັ້ງທຳອິດ (ບໍ່ຕ້ອງແຕະທີ່ວິດີໂອໂດຍກົງ)
+  const unlockOnInteract = () => {
+    tryPlay();
+    document.removeEventListener('touchstart', unlockOnInteract);
+    document.removeEventListener('click', unlockOnInteract);
+    document.removeEventListener('scroll', unlockOnInteract);
+  };
+  document.addEventListener('touchstart', unlockOnInteract, { once: true, passive: true });
+  document.addEventListener('click', unlockOnInteract, { once: true });
+  document.addEventListener('scroll', unlockOnInteract, { once: true, passive: true });
+}
+
+// === ແກ້ບັກ: ປ້າຍໄຟທີ່ຕົວລະຄອນຖືຢູ່ (#heroSign) ຖືກຂຽນເປັນ HTML ຕາຍໂຕ "FIGGER!SHOP" ມາແຕ່ຕົ້ນ
+//     ພໍແອດມິນປ່ຽນຊື່ຮ້ານໃນ "ຕັ້ງຄ່າຮ້ານ" (settings.js ຈະໄປອັບເດດ [data-site-name] ໃຫ້) ປ້າຍໄຟນີ້ບໍ່ຮູ້ເລື່ອງ
+//     ຍັງໂຊວ໌ຊື່ເກົ່າຄ້າງໄວ້. ຟັງຊັນນີ້ຈະສ້າງໂຕໜັງສືປ້າຍໄຟຂຶ້ນໃໝ່ຈາກຊື່ຮ້ານທີ່ແທ້ຈິງທຸກຄັ້ງທີ່ມັນປ່ຽນ.
+//     ໝາຍເຫດ: ຊື່ຮ້ານໃນ [data-site-name] ບາງເທື່ອຖືກຈັດເປັນໂຕໜັງສືພິເສດ (bold unicode ເຊັ່ນ 𝐒𝐇𝐎𝐏)
+//     ເຊິ່ງ font ຂອງປ້າຍໄຟ (Chakra Petch) ບໍ່ມີໂຕນັ້ນ -> ໂຊວ໌ເປັນກ່ອງແທນ (ນີ້ຄືອາການ "ບັກ" ທີ່ເຫັນ)
+//     ຈຶ່ງຕ້ອງ .normalize('NFKD') ກັບຄືນເປັນໂຕປົກກະຕິກ່ອນ
+function syncHeroSignName(){
+  const heroSign = document.getElementById('heroSign');
+  const nameSource = document.querySelector('[data-site-name]');
+  if (!heroSign || !nameSource) return;
+
+  const rawName = (nameSource.textContent || '').trim();
+  if (!rawName) return;
+
+  const normalized = rawName.normalize('NFKD');
+  if (heroSign.dataset.lastName === normalized) return; // ຊື່ບໍ່ປ່ຽນ -> ບໍ່ຕ້ອງສ້າງໃໝ່
+  heroSign.dataset.lastName = normalized;
+
+  heroSign.querySelectorAll('.hero-letter').forEach(el => el.remove());
+
+  const sparkRef = heroSign.querySelector('.hero-spark');
+  const frag = document.createDocumentFragment();
+  Array.from(normalized).forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'hero-letter';
+    span.textContent = ch === ' ' ? '\u00A0' : ch;
+    span.style.animationDelay = (i * 0.09) + 's';
+    frag.appendChild(span);
+  });
+  heroSign.insertBefore(frag, sparkRef || null);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ລອງໃສ່ຊື່ຮ້ານທີ່ຖືກຕ້ອງໃສ່ປ້າຍໄຟທັນທີ (ເຜື່ອມີຢູ່ແລ້ວ) ແລ້ວຈັບຕາເບິ່ງການປ່ຽນແປງ
+  // ຕໍ່ໄປໃນອະນາຄົດ (settings.js ອາດຈະດຶງຊື່ຮ້ານມາຈາກ Supabase ແບບ async ຊ້າກວ່ານີ້)
+  syncHeroSignName();
+  const nameSource = document.querySelector('[data-site-name]');
+  if (nameSource && 'MutationObserver' in window) {
+    const heroSignObserver = new MutationObserver(() => syncHeroSignName());
+    heroSignObserver.observe(nameSource, { childList: true, characterData: true, subtree: true });
+  }
+
+  // ບັງຄັບເລ່ນວິດີໂອຫນ້າຫຼັກ
+  forceHeroVideoAutoplay();
+
+  // ໝາຍເຫດ: ປຸ່ມເມນູ (ແຮມເບີເກີ) ຖືກຈັດການໂດຍ menu.js ແລ້ວ (ເປີດ/ປິດເມນູຈິງ)
+
+  // ປຸ່ມ CTA ຫຼັກ/ຮອງ
+  const topupBtn = document.getElementById('ctaTopupBtn');
+  if (topupBtn) {
+    topupBtn.addEventListener('click', () => {
+      window.location.href = 'topup.html';
+    });
+  }
+
+  const startBtn = document.getElementById('ctaStartBtn');
+  if (startBtn) {
+    startBtn.addEventListener('click', async () => {
+      const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('productGrid')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // ປຸ່ມ "ເບິ່ງເພີ່ມເຕີມ" ຂອງລາຍການສິນຄ້າ (ໝວດ "ສິນຄ້າແນະນຳ")
+  document.querySelectorAll('.section-head .see-all').forEach(btn => {
+    if (btn.id === 'catShowAll') return; // ອັນນີ້ຖືກຜູກໄວ້ໃນ buildCategoryFilter ແລ້ວ
+    btn.addEventListener('click', () => {
+      showToast('ໄປຍັງໜ້າລາຍການທັງໝົດ');
+    });
+  });
+
+  // ໝວດໝູ່ສິນຄ້າ (cat-card) ຢູ່ໃນ HTML ຢູ່ແລ້ວຕັ້ງແຕ່ຕົ້ນ -> ໃຫ້ fade + slide ສະຫຼັບຊ້າຍ-ຂວາ ເຂົ້າມາທີລະໃບ ເມື່ອເລື່ອນລົງມາເຫັນ
+  revealCardsOnScroll(document.querySelectorAll('.cat-card'));
+
+  // ໂຫຼດສິນຄ້າຈິງຈາກຖານຂໍ້ມູນ ແລະ ຕັ້ງຄ່າຕົວກອງໝວດໝູ່
+  loadStoreProducts();
+
+  // ອັບເດດສົດ: ເມື່ອແອດມິນເພີ່ມ/ແກ້ໄຂ/ລຶບສິນຄ້າ (ຫຼືປ່ຽນ paused/archived) ໜ້າຮ້ານຈະຣີເຟຣຊອັດຕະໂນມັດ
+  if (typeof supabaseClient !== 'undefined') {
+    supabaseClient
+      .channel('public:products')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        loadStoreProducts();
+      })
+      .subscribe();
+
+    // ມີອໍເດີໃໝ່/ອັບເດດ (ເຊັ່ນ: ຈ່າຍເງິນສຳເລັດ) -> ຣີເຟຣຊຈຳນວນ "ຂາຍແລ້ວ" ອັດຕະໂນມັດ ແບບ real-time
+    supabaseClient
+      .channel('public:orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        loadStoreProducts();
+      })
+      .subscribe();
+  }
+
+});
