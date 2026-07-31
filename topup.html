@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net; frame-ancestors 'self'; base-uri 'self'; form-action 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>ເຕີມເງິນ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+<div class="wrap">
+
+  <!-- BACK ROW -->
+  <div class="back-row">
+    <button class="back-btn" id="backBtn" aria-label="ກັບຄືນ">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="page-title">ເຕີມເງິນ</h1>
+  </div>
+
+  <!-- ================= STEP 1: ເລືອກຍອດເງິນ ================= -->
+  <div class="topup-step is-active" id="stepAmount">
+    <div class="step-heading">ເລືອກຈຳນວນເງິນທີ່ຈະເຕີມ</div>
+
+    <div class="amount-grid" id="amountGrid"></div>
+
+    <div class="amount-chip custom-chip" id="customChip" style="margin-bottom:14px;">
+      <span>ກຳນົດຈຳນວນເອງ</span>
+    </div>
+
+    <div class="custom-amount-box" id="customAmountBox">
+      <input type="number" id="customAmountInput" placeholder="ໃສ່ຈຳນວນເງິນ" min="1000" step="1000">
+      <span class="unit-label">₭</span>
+    </div>
+
+    <button class="confirm-btn" id="goToPayBtn" disabled style="opacity:0.5;">
+      ດຳເນີນການຕໍ່
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <!-- ================= STEP 2: ໂອນເງິນ + ອັບໂຫຼດສະລິບ ================= -->
+  <div class="topup-step" id="stepPay">
+    <div class="step-nav-back" id="backToAmount">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      ປ່ຽນຈຳນວນເງິນ
+    </div>
+
+    <div class="qr-card">
+      <div class="qr-amount-label">ຍອດທີ່ຕ້ອງໂອນ</div>
+      <div class="qr-amount shine-text" id="qrAmountText">0 ₭</div>
+      <div class="qr-frames-row">
+        <div class="qr-frame-col" id="qrCol1">
+          <div class="qr-frame-label" id="qrLabel1" style="display:none;"></div>
+          <div class="qr-frame">
+            <img src="assets/IMG_2901.jpeg" alt="QR ຮັບເງິນ" id="qrImage"
+                 onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='flex';">
+            <div class="qr-placeholder" id="qrFallback" style="display:none;">
+              [ ໃສ່ຮູບ QR ຮັບເງິນຂອງຮ້ານທີ່ assets/IMG_2901.jpeg ]
+            </div>
+          </div>
+        </div>
+        <div class="qr-frame-col" id="qrCol2" style="display:none;">
+          <div class="qr-frame-label" id="qrLabel2" style="display:none;"></div>
+          <div class="qr-frame">
+            <img id="qrImage2" alt="QR ຮັບເງິນ 2">
+          </div>
+        </div>
+      </div>
+      <div class="qr-hint">ສະແກນ QR ດ້ານເທິງດ້ວຍແອັບທະນາຄານ ແລ້ວໂອນຕາມຍອດທີ່ລະບຸໃຫ້ຖືກຕ້ອງ</div>
+    </div>
+
+    <div class="step-heading">ອັບໂຫຼດສະລິບການໂອນ</div>
+    <label class="slip-upload" id="slipUpload">
+      <input type="file" id="slipInput" accept="image/*">
+      <div class="slip-upload-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+      </div>
+      <div class="slip-upload-text">ກົດເພື່ອເລືອກຮູບສະລິບ</div>
+      <div class="slip-upload-sub">ຮອງຮັບ JPG, PNG</div>
+      <img class="slip-preview" id="slipPreview" alt="ຕົວຢ່າງສະລິບ">
+      <div class="slip-filename" id="slipFilename"></div>
+    </label>
+
+    <button class="confirm-btn" id="confirmTopupBtn" disabled style="opacity:0.5;">
+      ຢືນຢັນການໂອນເງິນ
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <!-- ================= STEP 3: ລໍຖ້າແອດມິນກວດສອບ ================= -->
+  <div class="topup-step" id="stepWaiting">
+    <div class="waiting-card">
+      <div class="waiting-ring">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+      </div>
+      <h2 class="shine-text">ກຳລັງລໍຖ້າການກວດສອບ</h2>
+      <p>ແອດມິນຈະກວດສະລິບການໂອນຂອງທ່ານ ແລະ ຢືນຢັນຍອດເງິນເຂົ້າບັນຊີໃນໄວໆນີ້</p>
+      <div class="waiting-dots"><span></span><span></span><span></span></div>
+
+      <div class="waiting-detail">
+        <div class="waiting-detail-row"><span>ລະຫັດອ້າງອີງ</span><b id="waitRef">—</b></div>
+        <div class="waiting-detail-row"><span>ຍອດເງິນ</span><b id="waitAmount">—</b></div>
+        <div class="waiting-detail-row"><span>ເວລາສົ່ງ</span><b id="waitTime">—</b></div>
+        <div class="waiting-detail-row"><span>ສະຖານະ</span><b style="color:#ffcf4d;">ລໍຖ້າກວດສອບ</b></div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="backHomeBtn" style="margin-top:18px;">
+      ກັບໄປໜ້າຫຼັກ
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="settings.js"></script>
+<script src="topup.js"></script>
+</body>
+</html>
