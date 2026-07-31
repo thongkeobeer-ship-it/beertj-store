@@ -201,9 +201,14 @@
   </nav>
 
   <div class="side-menu-foot" id="sideMenuFoot">
-    <a class="side-menu-link" href="login.html">
+    <div class="side-menu-foot-label">ລະບົບສະມາຊິກ</div>
+    <a class="side-menu-btn side-menu-btn-primary" href="login.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
       ເຂົ້າສູ່ລະບົບ
+    </a>
+    <a class="side-menu-btn side-menu-btn-outline" href="login.html?mode=register">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      ສະໝັກສະມາຊິກ
     </a>
   </div>
 </aside>
@@ -222,19 +227,31 @@
       </div>
       <div class="brand-name shine-text" data-site-name>FIGGER!SHOP</div>
     </div>
+    <button class="icon-btn" id="navSearchBtn" aria-label="ຄົ້ນຫາສິນຄ້າ" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <div id="authSlot" class="auth-slot"></div>
     <button class="menu-btn" id="menuBtn" aria-label="ເປີດເມນູ" aria-controls="sideMenu" aria-expanded="false" type="button">
       <span></span><span></span><span></span>
     </button>
   </div>
 
+  <!-- ກ່ອງຄົ້ນຫາສິນຄ້າ (ເປີດ/ປິດເມື່ອກົດປຸ່ມຄົ້ນຫາຢູ່ navbar) -->
+  <div class="search-panel" id="searchPanel" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchPanelInput" placeholder="ຄົ້ນຫາຊື່ສິນຄ້າ...">
+  </div>
+
   <!-- HERO -->
   <div class="hero">
-    <h1 class="shine-text"></h1>
+    <h1 class="shine-text">ຍິນດີຕ້ອນຮັບສູ່ຮ້ານ <span data-site-name>FIGGER!SHOP</span></h1>
     <p data-site-tagline>ຄຳອະທິບາຍສັ້ນໆກ່ຽວກັບຮ້ານຂອງທ່ານ ໃສ່ຈຸດເດັ່ນ ແລະ ສິ່ງທີ່ລູກຄ້າຈະໄດ້ຮັບຢູ່ບ່ອນນີ້</p>
     <div class="cta-row">
       <button class="btn btn-primary" id="ctaStartBtn">ເລີ່ມຕົ້ນນຳໃຊ້</button>
       <button class="btn btn-secondary" id="ctaTopupBtn">ເຕີມເງິນ →</button>
+      <button class="btn-icon-round" id="ctaInfoBtn" aria-label="ກ່ຽວກັບຮ້ານ" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></svg>
+      </button>
     </div>
     <div class="trust-badges">
       <div class="trust-badge">
@@ -256,6 +273,14 @@
     </div>
   </div>
 
+  <!-- ===== ຮູບແບນເນີຮ້ານ (ໃສ່ຮູບເອງພາຍຫຼັງ) =====
+       ອັບໂຫຼດຮູບຂອງທ່ານຊື່ file "banner.png" (ຫຼືປ່ຽນ src ຂ້າງລຸ່ມນີ້) ໄວ້ໃນໂຟນເດີດຽວກັບ index.html
+       ຖ້າຍັງບໍ່ໄດ້ໃສ່ຮູບ ກ່ອງນີ້ຈະຖືກເຊື່ອງໄວ້ອັດຕະໂນມັດ ບໍ່ໂຊວ໌ໄອຄອນຮູບແຕກ -->
+  <div class="hero-banner" id="heroBanner">
+    <img src="banner.png" alt="ແບນເນີຮ້ານ" class="hero-banner-img" id="heroBannerImg"
+         onerror="this.closest('#heroBanner').style.display='none'">
+  </div>
+
   <!-- IMAGE PLACEHOLDER -->
   <div class="media-slot has-photo">
     <video class="media-photo" src="hero-live.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
@@ -271,13 +296,17 @@
 
   <!-- ANNOUNCEMENT (ເລື່ອນຂວາໄປຊ້າຍ ວົນຊ້ຳໄປເລື່ອຍໆ) -->
   <div class="announce">
-    <span class="dot-icon"></span>
+    <span class="announce-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l4 4V6L7 10H4a1 1 0 0 0-1 1Z"/><path d="M15 8a4 4 0 0 1 0 8"/><path d="M18 5a8 8 0 0 1 0 14"/></svg>
+      ປະກາດ
+    </span>
     <div class="announce-marquee">
       <div class="announce-track" id="announceTrack">
         <span class="announce-item">ຂໍ້ຄວາມປະກາດ / ໂປຣໂມຊັ່ນຂອງຮ້ານທ່ານ</span>
         <span class="announce-item">ຂໍ້ຄວາມປະກາດ / ໂປຣໂມຊັ່ນຂອງຮ້ານທ່ານ</span>
       </div>
     </div>
+    <span class="announce-status"><span class="status-dot"></span>ໃຊ້ງານໄດ້ປົກກະຕິ</span>
   </div>
 
   <!-- LIVE BANNER -->
@@ -290,21 +319,33 @@
   <!-- STAT GRID -->
   <div class="stat-grid">
     <div class="stat-card">
-      <div class="stat-num" id="statOnlineUsers">0</div>
-      <div class="stat-label">ຜູ້ໃຊ້ງານ</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="stat-label">ຜູ້ໃຊ້ທັງໝົດ</div>
+      <div class="stat-num"><span id="statOnlineUsers">0</span> <span class="stat-unit">ຄົນ</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statProductCount">0</div>
-      <div class="stat-label">ສິນຄ້າ</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div class="stat-label">ສິນຄ້າທັງໝົດ</div>
+      <div class="stat-num"><span id="statProductCount">0</span> <span class="stat-unit">ລາຍການ</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statStockCount">0</div>
-      <div class="stat-label">ຄັງສິນຄ້າ</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+      <div class="stat-label">ສະຕັອກພ້ອມສົ່ງ</div>
+      <div class="stat-num"><span id="statStockCount">0</span> <span class="stat-unit">ຊິ້ນ</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statSoldCount">0</div>
-      <div class="stat-label">ຂາຍແລ້ວ</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2 4.8-4.8"/></svg></div>
+      <div class="stat-label">ອໍເດີສຳເລັດ</div>
+      <div class="stat-num"><span id="statSoldCount">0</span> <span class="stat-unit">ລາຍການ</span></div>
     </div>
+  </div>
+
+  <!-- LATEST ORDERS (ດຶງຈາກຖານຂໍ້ມູນອໍເດີຈິງ) -->
+  <div class="section-head">
+    <h2>ລາຍການສັ່ງຊື້ລ່າສຸດ</h2>
+  </div>
+  <div class="latest-orders-row" id="latestOrdersRow">
+    <div class="empty-note">ກຳລັງໂຫຼດ...</div>
   </div>
 
   <!-- CATEGORY SECTION -->
