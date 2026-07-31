@@ -457,6 +457,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.style.display = 'none';
   });
 
+  // ຖ້າມາຈາກລິ້ງ ?mode=register (ປຸ່ມ "ສະໝັກສະມາຊິກ" ໃນເມນູ) ໃຫ້ເປີດແທັບສະໝັກອັດຕະໂນມັດ
+  if (new URLSearchParams(window.location.search).get('mode') === 'register') {
+    tabRegister.click();
+  }
+
   // ---- helpers ----
   function setMsg(el, text, kind) {
     el.classList.remove('show', 'error', 'success', 'pending');
