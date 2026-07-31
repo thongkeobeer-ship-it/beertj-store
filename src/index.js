@@ -12,6 +12,10 @@ export default {
       return handleVerifySlip(request, env);
     }
 
+    if (url.pathname === "/api/notify-discord" && request.method === "POST") {
+      return handleNotifyDiscord(request, env);
+    }
+
     // ໜ້າອື່ນໆ ທັງໝົດ → ໃຫ້ static assets (ໄຟລ໌ html/css/js ເດີມ) ຈັດການຕາມປົກກະຕິ
     return env.ASSETS.fetch(request);
   },
@@ -110,6 +114,37 @@ async function handleVerifySlip(request, env) {
   } catch (err) {
     console.error(err);
     return jsonResponse({ error: "ເກີດຂໍ້ຜິດພາດພາຍໃນ server" }, 500);
+  }
+}
+
+async function handleNotifyDiscord(request, env) {
+  try {
+    if (!env.DISCORD_WEBHOOK_URL) {
+      // ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ secret — ບໍ່ຕ້ອງ error ໃສ່ user, ແຄ່ log ໄວ້ຝັ່ງ server ພໍ
+      console.error("ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ DISCORD_WEBHOOK_URL (Worker > Settings > Variables and Secrets)");
+      return jsonResponse({ ok: false }, 200);
+    }
+
+    const { content, embeds } = await request.json();
+    const body = { content: content || undefined };
+    if (embeds) body.embeds = embeds;
+
+    const discordRes = await fetch(env.DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!discordRes.ok) {
+      const errText = await discordRes.text();
+      console.error("Discord webhook error:", errText);
+      return jsonResponse({ ok: false }, 200);
+    }
+
+    return jsonResponse({ ok: true }, 200);
+  } catch (err) {
+    console.error(err);
+    return jsonResponse({ ok: false }, 200);
   }
 }
 
