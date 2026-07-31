@@ -62,24 +62,27 @@ function productCardHtml(p){
       </button>`
     : `<button class="buy-btn">ສັ່ງຊື້ <span>→</span></button>`;
 
+  // ປ້າຍ "Best Seller" — ໂຊວ໌ໃຫ້ສິນຄ້າທີ່ຂາຍດີ (ຂາຍແລ້ວຫຼາຍກວ່າ 5 ຊິ້ນ)
+  const bestSellerHtml = soldCount >= 5
+    ? `<div class="ribbon-best">Best Seller</div>`
+    : '';
+
   return `
   <div class="product-card ${isPaused ? 'is-paused' : ''}" data-id="${p.id}">
     <div class="product-media">
-      <div class="badge-row">
-        <span class="badge badge-new badge-sold">ຂາຍແລ້ວ ${soldCount} ຊິ້ນ</span>
-      </div>
+      ${bestSellerHtml}
       ${img}
       ${pausedOverlayHtml}
     </div>
     <div class="product-body">
-      <div class="product-eyebrow">${p.category || 'ໝວດໝູ່ສິນຄ້າ'}</div>
       <div class="product-title">${p.name}</div>
-      <div class="product-status ${statusClass}"><span class="live-dot"></span> ${statusText}</div>
+      <div class="price-label">ລາຄາສິນຄ້າ</div>
       <div class="product-footer">
         ${priceHtml}
-        <div class="stock">ຄົງເຫຼືອ ${p.stock || 0}</div>
+        <div class="product-status ${statusClass}">${statusText}</div>
       </div>
       ${buyBtnHtml}
+      <div class="stock">ຄົງເຫຼືອ ${p.stock || 0} ຊິ້ນ</div>
     </div>
   </div>`;
 }
@@ -157,6 +160,62 @@ async function loadStoreProducts(){
 
   buildCategoryFilter();
   renderProducts(currentCategory);
+}
+
+// ============================================
+// ລາຍການສັ່ງຊື້ລ່າສຸດ (latest-orders-row) — ດຶງອໍເດີທີ່ສຳເລັດແລ້ວຈິງຈາກຖານຂໍ້ມູນ
+// ໝາຍເຫດ: ຮ້ານນີ້ບໍ່ໄດ້ເກັບຊື່ຜູ້ຊື້ແບບສາທາລະນະ (ບໍ່ມີ profiles.display_name) ແລະ
+// ອີເມວແທ້ຂອງລູກຄ້າຄົນອື່ນອ່ານຈາກຝັ່ງລູກຄ້າບໍ່ໄດ້ (ຖືກປ້ອງກັນໄວ້ໂດຍ Supabase Auth)
+// -> ໃຊ້ "ລະຫັດອໍເດີ" (ref) ແທນ ເພື່ອບໍ່ອວດຂໍ້ມູນສ່ວນຕົວຂອງໃຜ
+// ============================================
+function relativeTimeLaoOrders(dateStr){
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.max(0, Math.round(diffMs / 60000));
+  if (mins < 1) return 'ຫາກໍ່ນີ້';
+  if (mins < 60) return mins + ' ນາທີຜ່ານມາ';
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return hours + ' ຊົ່ວໂມງຜ່ານມາ';
+  const days = Math.round(hours / 24);
+  return days + ' ວັນຜ່ານມາ';
+}
+
+function latestOrderCardHtml(o){
+  const p = o.products || {};
+  const thumb = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.name || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+    : '';
+  const amount = o.total_price ?? o.amount ?? o.price ?? (p.price ? p.price * (o.quantity || 1) : 0);
+  const codeTail = (o.ref || String(o.id || '')).slice(-4);
+  return `
+  <div class="latest-order-card">
+    <div class="latest-order-thumb">${thumb}</div>
+    <div class="latest-order-info">
+      <div class="latest-order-name">${p.name || 'ສິນຄ້າ'}</div>
+      <div class="latest-order-price">${formatKip(amount)}</div>
+      <div class="latest-order-meta">${relativeTimeLaoOrders(o.created_at)} · ອໍເດີ #${codeTail}***</div>
+    </div>
+  </div>`;
+}
+
+async function loadLatestOrders(){
+  const row = document.getElementById('latestOrdersRow');
+  if (!row || typeof supabaseClient === 'undefined') return;
+  const possibleStatuses = ['completed', 'paid', 'success', 'delivered', 'done'];
+  try {
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('*, products(name, image_url, price)')
+      .in('status', possibleStatuses)
+      .order('created_at', { ascending: false })
+      .limit(6);
+    if (error || !data || !data.length) {
+      row.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
+      return;
+    }
+    row.innerHTML = data.map(latestOrderCardHtml).join('');
+  } catch (err) {
+    row.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
+  }
 }
 
 function buildCategoryFilter(){
@@ -524,6 +583,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const startBtn = document.getElementById('ctaStartBtn');
   if (startBtn) {
+    // ປ່ຽນຂໍ້ຄວາມປຸ່ມຕາມສະຖານະ login (ຄືກັນກັບ GproShop: "ເລືອກເບິ່ງສິນຄ້າ" ຖ້າ login ແລ້ວ, "ເລີ່ມຕົ້ນນຳໃຊ້" ຖ້າຍັງບໍ່ login)
+    (async () => {
+      const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
+      startBtn.textContent = user ? 'ເລືອກເບິ່ງສິນຄ້າ' : 'ເລີ່ມຕົ້ນນຳໃຊ້';
+    })();
+
     startBtn.addEventListener('click', async () => {
       const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
       if (!user) {
@@ -531,6 +596,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       document.getElementById('productGrid')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // ປຸ່ມ "ⓘ" ວົງມົນ ຢູ່ຂ້າງ CTA — ສະແດງຈຸດເດັ່ນຂອງຮ້ານແບບຫຍໍ້ໆ
+  const infoBtn = document.getElementById('ctaInfoBtn');
+  if (infoBtn) {
+    infoBtn.addEventListener('click', () => {
+      document.querySelector('.trust-badges')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('ຊຳລະເງິນປອດໄພ • ຮັບສິນຄ້າທັນທີ • ຢືນຢັນທຸກອໍເດີ • ຝ່າຍຊ່ວຍເຫຼືອພ້ອມຕອບ');
+    });
+  }
+
+  // ປຸ່ມຄົ້ນຫາ (ວົງມົນ) ຢູ່ navbar — ເປີດ/ປິດ ກ່ອງຄົ້ນຫາ ແລະ ກັ່ນຕອງລາຍການສິນຄ້າຕາມຊື່
+  const searchBtn = document.getElementById('navSearchBtn');
+  const searchPanel = document.getElementById('searchPanel');
+  const searchInput = document.getElementById('searchPanelInput');
+  if (searchBtn && searchPanel && searchInput) {
+    searchBtn.addEventListener('click', () => {
+      const willOpen = searchPanel.hidden;
+      searchPanel.hidden = !willOpen;
+      if (willOpen) searchInput.focus();
+    });
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const grid = document.getElementById('productGrid');
+      if (!grid) return;
+      if (!q) { renderProducts(currentCategory); return; }
+      const matches = allProducts.filter(p => (p.name || '').toLowerCase().includes(q));
+      grid.innerHTML = matches.length
+        ? matches.map(productCardHtml).join('')
+        : '<div class="empty-note">ບໍ່ພົບສິນຄ້າທີ່ຄົ້ນຫາ</div>';
+      attachProductCardBehaviors(matches);
     });
   }
 
@@ -547,6 +644,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ໂຫຼດສິນຄ້າຈິງຈາກຖານຂໍ້ມູນ ແລະ ຕັ້ງຄ່າຕົວກອງໝວດໝູ່
   loadStoreProducts();
+
+  // ໂຫຼດລາຍການສັ່ງຊື້ລ່າສຸດ
+  loadLatestOrders();
 
   // ເລີ່ມນັບຜູ້ໃຊ້ງານອອນລາຍແບບສົດໆ
   initOnlineUsersPresence();
@@ -565,6 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .channel('public:orders')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
         loadStoreProducts();
+        loadLatestOrders();
       })
       .subscribe();
   }
