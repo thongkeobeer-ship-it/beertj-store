@@ -6,16 +6,15 @@
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================
-// ການແຈ້ງເຕືອນໄປຫາ Discord (webhook)
+// ການແຈ້ງເຕືອນໄປຫາ Discord
+// ໝາຍເຫດ: webhook URL ຖືກຍ້າຍໄປເກັບເປັນ secret ໃນ Worker (env.DISCORD_WEBHOOK_URL)
+// ຝັ່ງ client ຈະຍິງໄປ /api/notify-discord (same-origin) ແທນ ບໍ່ໃຫ້ webhook URL ຫຼຸດອອກມາໃນໜ້າເວັບ
 // ============================================
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1530920792513319126/9CgO0Xgjc8PMYL7TrXPRJYTIDxWpqD8Yfofd7zLQUPuMcinXRLJEcFUQnDot4_F8Brjc';
-
 async function sendDiscordNotification(content, embed) {
-  if (!DISCORD_WEBHOOK_URL) return;
   try {
     const body = { content };
     if (embed) body.embeds = [embed];
-    await fetch(DISCORD_WEBHOOK_URL, {
+    await fetch('/api/notify-discord', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
