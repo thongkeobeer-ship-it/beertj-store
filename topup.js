@@ -30,27 +30,25 @@ function showStep(stepId){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderAmountGrid(){
-  const grid = document.getElementById('amountGrid');
-  grid.innerHTML = TOPUP_PRESETS.map(amt => `
-    <div class="amount-chip" data-amount="${amt}">
-      <div class="chip-amount">${amt.toLocaleString('th-TH')}</div>
-      <div class="chip-unit">ກີບ</div>
-    </div>
+function renderQuickAmountRow(){
+  const row = document.getElementById('quickAmountRow');
+  row.innerHTML = TOPUP_PRESETS.map(amt => `
+    <div class="quick-amount-pill" data-amount="${amt}">${amt.toLocaleString('th-TH')} ₭</div>
   `).join('');
 
-  grid.querySelectorAll('.amount-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      selectAmount(Number(chip.dataset.amount), chip);
+  row.querySelectorAll('.quick-amount-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const amount = Number(pill.dataset.amount);
+      document.getElementById('customAmountInput').value = amount;
+      selectAmount(amount, pill);
     });
   });
 }
 
-function selectAmount(amount, chipEl){
+function selectAmount(amount, pillEl){
   selectedAmount = amount;
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('is-selected'));
-  document.getElementById('customAmountBox').classList.remove('show');
-  if (chipEl) chipEl.classList.add('is-selected');
+  document.querySelectorAll('.quick-amount-pill').forEach(p => p.classList.remove('is-selected'));
+  if (pillEl) pillEl.classList.add('is-selected');
   updateGoToPayState();
 }
 
@@ -69,27 +67,25 @@ function updateConfirmState(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderAmountGrid();
+  renderQuickAmountRow();
 
   document.getElementById('backBtn').addEventListener('click', () => {
     window.history.length > 1 ? window.history.back() : (window.location.href = 'index.html');
   });
 
-  // --- ກຳນົດຈຳນວນເອງ ---
-  const customChip = document.getElementById('customChip');
-  const customBox = document.getElementById('customAmountBox');
-  const customInput = document.getElementById('customAmountInput');
-
-  customChip.addEventListener('click', () => {
-    document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('is-selected'));
-    customBox.classList.add('show');
-    customInput.focus();
-    selectedAmount = 0;
-    updateGoToPayState();
+  // --- ວິທີເຕີມເງິນ: ໂອນ QR ຮ້ານ (ໃຊ້ງານໄດ້) / ຊ່ອງທາງອື່ນ (ໄວໆນີ້) ---
+  document.getElementById('methodOther').addEventListener('click', () => {
+    showToast('ຊ່ອງທາງນີ້ຍັງບໍ່ເປີດໃຊ້ງານ ກະລຸນາໃຊ້ "ໂອນ QR ຮ້ານ" ໄປກ່ອນ');
   });
+
+  // --- ຈຳນວນເງິນ: ພິມເອງ ຫຼື ກົດປຸ່ມລັດ ---
+  const customInput = document.getElementById('customAmountInput');
 
   customInput.addEventListener('input', () => {
     selectedAmount = Math.max(0, Number(customInput.value) || 0);
+    document.querySelectorAll('.quick-amount-pill').forEach(p => {
+      p.classList.toggle('is-selected', Number(p.dataset.amount) === selectedAmount);
+    });
     updateGoToPayState();
   });
 
