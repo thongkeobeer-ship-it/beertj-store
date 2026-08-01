@@ -93,6 +93,23 @@
     cursor: not-allowed;
   }
 
+  /* ===== ປຸ່ມຢືນຢັນລອຍຄ້າງໄວ້ລຸ່ມສຸດຂອງໜ້າຈໍ (ຄືກັບໜ້າຕົວຢ່າງ) ===== */
+  body{ padding-bottom: 96px; }
+  .confirm-bar{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 40;
+    padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(11,13,20,0) 0%, var(--navy-900) 32%);
+  }
+  .confirm-bar-inner{
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .confirm-btn{
+    margin-top: 0 !important;
+  }
+
   /* ===== ສິນຄ້າຢຸດຂາຍຊົ່ວຄາວ ===== */
   .paused-banner{
     display:none;
@@ -234,14 +251,18 @@
     </div>
   </div>
 
-  <!-- CONFIRM BUTTON -->
-  <button class="confirm-btn" id="confirmBtn">
-    ຢືນຢັນການສັ່ງຊື້
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-  </button>
-
   <div class="order-id" id="orderRef">&nbsp;</div>
 
+</div>
+
+<!-- ປຸ່ມຢືນຢັນ ລອຍຄ້າງໄວ້ລຸ່ມສຸດຂອງໜ້າຈໍ -->
+<div class="confirm-bar">
+  <div class="confirm-bar-inner">
+    <button class="confirm-btn" id="confirmBtn">
+      ຢືນຢັນການສັ່ງຊື້
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- SUCCESS OVERLAY -->
