@@ -146,7 +146,7 @@ function injectAccountMenuStyles() {
     .acct-avatar-btn svg{ width:18px;height:18px;stroke:currentColor; }
     .acct-dropdown{
       position:absolute; top:calc(100% + 10px); right:0; width:254px; max-width:82vw;
-      background:linear-gradient(165deg, rgba(17,28,56,0.98), rgba(5,9,20,0.99));
+      background:linear-gradient(165deg, rgba(19,22,32,0.98), rgba(5,7,12,0.99));
       border:1px solid rgba(232,173,46,0.25); border-radius:16px;
       box-shadow:0 14px 34px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,207,77,0.05);
       padding:16px 0 8px; z-index:60; font-family:'Noto Sans Thai','Chakra Petch',sans-serif;
