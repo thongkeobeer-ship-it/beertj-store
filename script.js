@@ -198,8 +198,8 @@ function latestOrderCardHtml(o){
 }
 
 async function loadLatestOrders(){
-  const row = document.getElementById('latestOrdersRow');
-  if (!row || typeof supabaseClient === 'undefined') return;
+  const track = document.getElementById('latestOrdersTrack');
+  if (!track || typeof supabaseClient === 'undefined') return;
   const possibleStatuses = ['completed', 'paid', 'success', 'delivered', 'done'];
   try {
     const { data, error } = await supabaseClient
@@ -209,12 +209,23 @@ async function loadLatestOrders(){
       .order('created_at', { ascending: false })
       .limit(6);
     if (error || !data || !data.length) {
-      row.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
+      track.classList.add('no-loop');
+      track.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
       return;
     }
-    row.innerHTML = data.map(latestOrderCardHtml).join('');
+    const cardsHtml = data.map(latestOrderCardHtml).join('');
+    if (data.length > 1) {
+      // ຊ້ຳລາຍການອອກເປັນ 2 ຊຸດ ເພື່ອໃຫ້ animation ວົນຊ້ຳໄດ້ແບບບໍ່ມີຮອຍຕໍ່ (seamless loop)
+      track.classList.remove('no-loop');
+      track.innerHTML = cardsHtml + cardsHtml;
+    } else {
+      // ມີແຄ່ 1 ລາຍການ — ບໍ່ຄວນວົນ (ຈະບໍ່ມີຫຍັງໃຫ້ເບິ່ງລະຫວ່າງຮອບ)
+      track.classList.add('no-loop');
+      track.innerHTML = cardsHtml;
+    }
   } catch (err) {
-    row.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
+    track.classList.add('no-loop');
+    track.innerHTML = '<div class="empty-note">ຍັງບໍ່ມີການສັ່ງຊື້</div>';
   }
 }
 
