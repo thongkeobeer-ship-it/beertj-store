@@ -179,62 +179,13 @@ async function renderAuthUI() {
   if (!authSlot) return;
 
   if (user) {
-    injectWalletStyles();
-    const initial = user.email ? user.email.charAt(0).toUpperCase() : '?';
-    const admin = await isAdmin();
-    const balance = await getWalletBalance(user.id);
-
-    const walletChipHtml = `
-      <div class="wallet-chip" id="walletChip" title="ຍອດເງິນຄົງເຫຼືອ">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h.01"/></svg>
-        <span class="wallet-amt" id="walletBalanceText">${formatKipWallet(balance)}</span>
-      </div>`;
-
-    const adminBtnHtml = admin ? `
-        <button class="btn-admin" id="adminEntryBtn" title="ໜ້າຄວບຄຸມແອດມິນ" aria-label="ໜ້າຄວບຄຸມແອດມິນ">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg>
-        </button>` : '';
-
-    const userChipHtml = `
-      <div class="user-chip" id="userChip">
-        <div class="user-avatar">${initial}</div>
-        <svg class="chip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="logout-menu" id="logoutMenu">
-        <div class="menu-email">${user.email}</div>
-        <button class="btn-logout" id="logoutBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          ອອກຈາກລະບົບ
-        </button>
-      </div>
-    `;
-
-    // ຍອດເງິນ + ປຸ່ມແອດມິນ -> ຢູ່ໃນ navbar ສະເໝີ
-    authSlot.innerHTML = `${walletChipHtml}${adminBtnHtml}`;
-
-    // ຊິບໂປຣໄຟລ໌ (avatar) -> ຖ້າມີ userChipRow ໃຫ້ໄປໂຊວ໌ບ່ອນນັ້ນ, ຖ້າບໍ່ມີໃຫ້ຄືນໄປໃສ່ໃນ authSlot ຄືເກົ່າ
-    if (userChipRow) {
-      userChipRow.innerHTML = userChipHtml;
-    } else {
-      authSlot.insertAdjacentHTML('beforeend', userChipHtml);
-    }
-
-    const userChip = document.getElementById('userChip');
-    const logoutMenu = document.getElementById('logoutMenu');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminBtn = document.getElementById('adminEntryBtn');
-
-    userChip.addEventListener('click', (e) => {
-      e.stopPropagation();
-      userChip.classList.toggle('open');
-      logoutMenu.classList.toggle('open');
-    });
-    document.addEventListener('click', () => {
-      userChip.classList.remove('open');
-      logoutMenu.classList.remove('open');
-    });
-    if (logoutBtn) logoutBtn.addEventListener('click', signOut);
-    if (adminBtn) adminBtn.addEventListener('click', () => { window.location.href = 'admin.html'; });
+    // ໝາຍເຫດ: wallet chip / ປຸ່ມແອດມິນ (ໂລ່) / avatar+dropdown ອອກຈາກລະບົບ ຖືກເອົາອອກຈາກ navbar ແລ້ວ
+    // (ຟັງຊັນເທົ່າກັນຍັງໃຊ້ໄດ້ຢູ່ໃນ "ເມນູຂ້າງ") — ເຫຼືອພຽງປຸ່ມວົງມົນໄອຄອນຄົນ (ໂປຣໄຟລ໌) ຄູ່ກັບປຸ່ມຄົ້ນຫາ
+    authSlot.innerHTML = `
+      <a class="btn-login" href="profile.html" aria-label="ໂປຣໄຟລ໌ຂອງຂ້ອຍ" title="ໂປຣໄຟລ໌ຂອງຂ້ອຍ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>`;
+    if (userChipRow) userChipRow.innerHTML = '';
 
     // ===== ເມນູຂ້າງ (side-menu): ໂຊວ໌ "ລະບົບສະມາຊິກ" ແທນປຸ່ມ ເຂົ້າສູ່ລະບົບ/ສະໝັກ =====
     const guestBox = document.getElementById('sideMenuGuestBox');
