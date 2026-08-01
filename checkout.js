@@ -148,6 +148,7 @@ function renderDurations(){
 
   grid.innerHTML = productDurations.map(d => `
     <div class="duration-pill ${selectedDuration?.id === d.id ? 'selected' : ''} ${d.stock <= 0 ? 'disabled' : ''}" data-id="${d.id}">
+      <span class="dp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></span>
       <span>${d.label}</span>
       <span class="dp-price">${formatKip(d.price)}</span>
     </div>
