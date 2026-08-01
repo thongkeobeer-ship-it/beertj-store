@@ -1,14 +1,14 @@
-// ໜ້າ "ประวัติการเติมเงิน" — โชว์เฉพาะรายการเติมเงินของผู้ใช้ที่ล็อกอินอยู่ (ตาราง topup_requests เดียวกับ topup.js)
+// ໜ້າ "ປະຫວັດການເຕີມເງິນ" — ໂຊວ໌ສະເພາະລາຍການເຕີມເງິນຂອງຜູ້ໃຊ້ທີ່ login ຢູ່ (ຕາຕະລາງ topup_requests ອັນດຽວກັບ topup.js)
 
 const TOPUP_TABLE = 'topup_requests';
 
 function thFormatKip(n) {
-  return Number(n || 0).toLocaleString('th-TH') + ' ₭';
+  return Number(n || 0).toLocaleString('en-US') + ' ₭';
 }
 
 function thFormatDate(iso) {
   try {
-    return new Date(iso).toLocaleString('th-TH', {
+    return new Date(iso).toLocaleString('lo-LA', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
@@ -16,9 +16,9 @@ function thFormatDate(iso) {
 }
 
 function thStatusLabel(status) {
-  if (status === 'approved') return 'อนุมัติแล้ว';
-  if (status === 'rejected') return 'ปฏิเสธ';
-  return 'รอตรวจสอบ';
+  if (status === 'approved') return 'ອະນຸມັດແລ້ວ';
+  if (status === 'rejected') return 'ປະຕິເສດ';
+  return 'ລໍຖ້າກວດສອບ';
 }
 
 function thStatusKey(status) {
@@ -31,7 +31,7 @@ function renderTopupHistory(rows) {
   const list = document.getElementById('topupHistoryList');
 
   if (!rows || !rows.length) {
-    list.innerHTML = '<div class="empty-note">ยังไม่มีประวัติการเติมเงิน</div>';
+    list.innerHTML = '<div class="empty-note">ທ່ານຍັງບໍ່ມີປະຫວັດການເຕີມເງິນ</div>';
     return;
   }
 
@@ -46,7 +46,7 @@ function renderTopupHistory(rows) {
           </div>
           <span class="th-status" data-status="${statusKey}">${thStatusLabel(r.status)}</span>
         </div>
-        <div class="th-card-ref">รหัสอ้างอิง: ${String(r.id).slice(0, 8)}</div>
+        <div class="th-card-ref">ລະຫັດອ້າງອີງ: ${String(r.id).slice(0, 8)}</div>
       </div>
     `;
   }).join('');
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (error) throw error;
     renderTopupHistory(data || []);
   } catch (err) {
-    console.error('ดึงประวัติการเติมเงินไม่สำเร็จ', err);
-    list.innerHTML = '<div class="empty-note">โหลดประวัติการเติมเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>';
+    console.error('ດຶງປະຫວັດການເຕີມເງິນບໍ່ສຳເລັດ', err);
+    list.innerHTML = '<div class="empty-note">ໂຫຼດປະຫວັດການເຕີມເງິນບໍ່ສຳເລັດ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</div>';
   }
 });
