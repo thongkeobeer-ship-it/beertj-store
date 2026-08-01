@@ -171,7 +171,8 @@
     cursor:not-allowed;
     border-color:rgba(255,207,77,0.15);
   }
-  .bonus-link-btn svg{ width:11px;height:11px;vertical-align:-1px;margin-right:3px;flex-shrink:0; }
+  .bonus-link-btn svg{ width:13px;height:13px;vertical-align:-2px;margin-right:4px;flex-shrink:0;stroke:#ffd76a; }
+  .bonus-link-btn.locked svg{ stroke:currentColor; }
   @keyframes bonusLinkIn{ to{ opacity:1; transform:translateY(0); } }
   @media (max-width:380px){
     .bonus-link-btn{ flex-basis:calc(33.33% - 6px); max-width:calc(33.33% - 6px); }
@@ -218,13 +219,6 @@
     <div class="duration-grid" id="durationGrid"></div>
   </div>
 
-  <!-- BONUS LINKS (ສະແດງສະເພາະສິນຄ້າທີ່ມີລິ້ງໂບນັດ) -->
-  <div class="bonus-links-section" id="bonusLinksSection">
-    <label>ລິ້ງໂບນັດ</label>
-    <div class="bonus-links-hint" id="bonusLinksHint"></div>
-    <div class="bonus-links-grid" id="bonusLinksGrid"></div>
-  </div>
-
   <!-- QTY STEPPER -->
   <div class="qty-row">
     <div class="qty-label">ຈຳນວນ</div>
@@ -259,6 +253,13 @@
   <div class="order-note">
     <label for="orderNoteInput" id="orderNoteLabel">ລາຍລະອຽດ</label>
     <textarea id="orderNoteInput" placeholder="ຕົວຢ່າງ: ຂໍໃຫ້ຫໍ່ແຍກ, ສົ່ງຫຼັງ 18:00, ຂະໜາດ M ..."></textarea>
+  </div>
+
+  <!-- BONUS LINKS (ສະແດງສະເພາະສິນຄ້າທີ່ມີລິ້ງໂບນັດ) -->
+  <div class="bonus-links-section" id="bonusLinksSection">
+    <label>ສອນລົງ</label>
+    <div class="bonus-links-hint" id="bonusLinksHint"></div>
+    <div class="bonus-links-grid" id="bonusLinksGrid"></div>
   </div>
 
 </div>
