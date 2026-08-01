@@ -631,11 +631,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ປຸ່ມ "ເບິ່ງເພີ່ມເຕີມ" ຂອງລາຍການສິນຄ້າ (ໝວດ "ສິນຄ້າແນະນຳ")
+  // ປຸ່ມ "ເບິ່ງເພີ່ມເຕີມ" ຂອງລາຍການສິນຄ້າ (ໝວດ "ສິນຄ້າແນະນຳ") -> ໄປໜ້າສິນຄ້າທັງໝົດ (products.html)
   document.querySelectorAll('.section-head .see-all').forEach(btn => {
     if (btn.id === 'catShowAll') return; // ອັນນີ້ຖືກຜູກໄວ້ໃນ buildCategoryFilter ແລ້ວ
     btn.addEventListener('click', () => {
-      showToast('ໄປຍັງໜ້າລາຍການທັງໝົດ');
+      window.location.href = 'products.html';
     });
   });
 
