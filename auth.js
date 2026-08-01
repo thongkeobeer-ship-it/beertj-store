@@ -122,7 +122,7 @@ function formatKipWallet(n) {
 // DROPDOWN MENU ຂອງໄອຄອນໂປຣໄຟລ໌ (avatar) — ຄລິກແລ້ວໂຊວ໌ຊື່/badge/ຍອດເງິນ + ລິ້ງລັດ
 // ============================================
 function acctFormatBaht(n) {
-  return '฿' + Number(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return formatKipWallet(n);
 }
 function acctEscapeHtml(str) {
   return String(str || '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
@@ -272,35 +272,35 @@ async function renderAuthUI() {
           <div class="acct-dd-user">
             <div class="acct-dd-name">${acctEscapeHtml(displayName)}</div>
             ${acctBadgeHtml}
-            <div class="acct-dd-balance">ยอดเงิน: <b>${acctFormatBaht(acctBalance)}</b></div>
+            <div class="acct-dd-balance">ຍອດເງິນ: <b>${acctFormatBaht(acctBalance)}</b></div>
           </div>
           <nav class="acct-dd-nav">
             <a class="acct-dd-link" href="profile.html" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="19" cy="16" r="2.2"/><path d="M19 12.5v1M19 18.5v1M21.6 14.8l-.9.5M17.3 17.7l-.9.5M21.6 17.2l-.9-.5M17.3 14.3l-.9-.5"/></svg>
-              จัดการโปรไฟล์
+              ຈັດການໂປຣໄຟລ໌
             </a>
             <a class="acct-dd-link" href="orders.html" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
-              สถานะคำสั่งซื้อ
+              ສະຖານະຄຳສັ່ງຊື້
             </a>
             <a class="acct-dd-link" href="topup.html" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h.01"/></svg>
-              เติมเงิน
+              ເຕີມເງິນ
             </a>
             <a class="acct-dd-link" href="topup-history.html" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
-              ประวัติการเติมเงิน
+              ປະຫວັດການເຕີມເງິນ
             </a>
             <a class="acct-dd-link" href="index.html#siteFooter" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              ติดต่อเรา
+              ຕິດຕໍ່ພວກເຮົາ
             </a>
           </nav>
           <div class="acct-dd-divider"></div>
           <nav class="acct-dd-nav">
             <button type="button" class="acct-dd-link danger" id="acctDdLogout" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              ออกจากระบบ
+              ອອກຈາກລະບົບ
             </button>
           </nav>
         </div>
