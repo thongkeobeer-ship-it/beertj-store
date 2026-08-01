@@ -1,7 +1,8 @@
 // ໜ້າປະຫວັດການສັ່ງຊື້
 
 function formatBaht(n){
-  return '฿' + Number(n || 0).toLocaleString('th-TH');
+  // ໝາຍເຫດ: ຊື່ຟັງຊັນຍັງເອີ້ນວ່າ formatBaht ຄືເກົ່າ ແຕ່ຕອນນີ້ຄືນຄ່າເປັນ "ກີບ" (₭) ໃຫ້ກົງກັບສະກຸນເງິນທີ່ໃຊ້ຈິງໃນຮ້ານ
+  return Number(n || 0).toLocaleString('en-US') + ' ₭';
 }
 
 function formatDate(iso){
