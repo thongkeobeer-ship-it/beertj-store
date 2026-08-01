@@ -256,14 +256,6 @@ async function renderAuthUI() {
     }
     if (profileLink) {
       profileLink.style.display = '';
-      if (!profileLink.dataset.bound) {
-        profileLink.dataset.bound = '1';
-        profileLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          // ໜ້າ "ຈັດການໂປຣໄຟລ໌" ຍັງບໍ່ໄດ້ສ້າງ -> ແຈ້ງເຕືອນໄວ້ກ່ອນ (ບໍ່ພັງລິ້ງ)
-          if (typeof showToast === 'function') showToast('ຄຸນສົມບັດນີ້ກຳລັງພັດທະນາ, ຈະເປີດໃຫ້ໃຊ້ໄວໆນີ້');
-        });
-      }
     }
 
     revealAuthSlot(authSlot);
