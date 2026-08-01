@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ບັນຊີຂອງຂ້ອຍ</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ສະໄຕລ໌ເພີ່ມສະເພາະໜ້ານີ້ (ບໍ່ໄປແກ້ style.css ຫຼັກ) — ໂຕນສີທອງກົງກັບທຸກໜ້າອື່ນຂອງເວັບ */
+  .pf-font{font-family:'Chakra Petch','Noto Sans Thai', sans-serif;}
+  .pf-lead{font-size:13.5px;color:var(--ink-500);margin:2px 0 18px;font-family:'Noto Sans Thai', sans-serif;}
+
+  .pf-crumbs{
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    font-size:12.5px;color:var(--ink-500);margin:0 0 14px;
+    font-family:'Noto Sans Thai', sans-serif;
+  }
+  .pf-crumbs a{color:var(--ink-500);text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+  .pf-crumbs a:hover{color:var(--shine-dim);}
+  .pf-crumbs svg{width:13px;height:13px;stroke:currentColor;}
+  .pf-crumbs .pf-current{color:var(--ink-100);font-weight:600;display:inline-flex;align-items:center;gap:4px;}
+
+  .pf-heading{
+    display:flex;align-items:center;gap:8px;
+    font-size:22px;font-weight:800;margin:0 0 4px;color:var(--ink-100);
+  }
+  .pf-heading svg{width:22px;height:22px;stroke:var(--shine-dim);}
+
+  /* ===== card ทั่วไป ===== */
+  .pf-card{
+    position:relative;border-radius:18px;margin-bottom:16px;
+    background:linear-gradient(165deg, rgba(17,28,56,0.92), rgba(5,9,20,0.97));
+    border:1px solid rgba(232,173,46,0.16);
+    padding:22px 20px;
+    overflow:hidden;
+  }
+  .pf-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 5px);
+  }
+
+  /* ===== profile head ===== */
+  .pf-head{display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .pf-avatar-wrap{position:relative;width:96px;height:96px;margin-bottom:14px;}
+  .pf-avatar{
+    width:96px;height:96px;border-radius:50%;overflow:hidden;
+    border:2px solid rgba(255,207,77,0.5);
+    box-shadow:0 0 22px -4px rgba(255,207,77,0.35);
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--black-300),var(--black-500));
+    font-size:34px;font-weight:800;color:#fff;
+  }
+  .pf-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+  .pf-name{font-size:19px;font-weight:800;color:var(--ink-100);margin:0 0 3px;}
+  .pf-email{font-size:13px;color:var(--ink-500);margin:0 0 12px;word-break:break-all;}
+  .pf-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 16px;border-radius:999px;
+    border:1px solid rgba(255,207,77,0.4);
+    background:rgba(255,207,77,0.08);
+    color:var(--shine-dim);font-weight:700;font-size:12.5px;letter-spacing:0.5px;
+  }
+  .pf-badge svg{width:14px;height:14px;stroke:currentColor;}
+  .pf-badge.is-admin{border-color:rgba(255,84,112,0.45);background:rgba(255,84,112,0.08);color:#ff8fa3;}
+  .pf-divider{width:100%;height:1px;background:rgba(154,154,164,0.14);margin:16px 0 12px;}
+  .pf-joined{font-size:12.5px;color:var(--ink-500);}
+
+  /* ===== wallet card ===== */
+  .pf-wallet-label{
+    display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-500);margin-bottom:6px;
+  }
+  .pf-wallet-label svg{width:16px;height:16px;stroke:var(--shine-dim);}
+  .pf-wallet-amount{font-size:32px;font-weight:800;color:var(--ink-100);margin-bottom:16px;font-variant-numeric:tabular-nums;}
+  .pf-wallet-actions{display:flex;gap:10px;}
+  .pf-wallet-btn{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px;border-radius:12px;text-decoration:none;
+    background:linear-gradient(135deg,var(--black-300),var(--black-500));
+    color:#fff;font-weight:700;font-size:13.5px;border:1px solid rgba(255,207,77,0.35);
+    transition:box-shadow .2s ease, transform .15s ease;
+  }
+  .pf-wallet-btn.outline{
+    background:rgba(255,255,255,0.02);color:var(--ink-100);border:1px solid rgba(154,154,164,0.2);
+  }
+  .pf-wallet-btn:hover{box-shadow:0 0 16px -4px rgba(255,207,77,0.4);}
+  .pf-wallet-btn:active{transform:scale(0.98);}
+  .pf-wallet-btn svg{width:16px;height:16px;stroke:currentColor;flex-shrink:0;}
+
+  /* ===== stat rows ===== */
+  .pf-stat-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+  .pf-stat-row{
+    display:flex;align-items:center;gap:14px;
+    background:linear-gradient(165deg, rgba(17,28,56,0.9), rgba(5,9,20,0.95));
+    border:1px solid rgba(232,173,46,0.14);
+    border-radius:16px;padding:16px 18px;
+  }
+  .pf-stat-icon{
+    width:44px;height:44px;border-radius:12px;flex-shrink:0;
+    background:rgba(255,207,77,0.1);border:1px solid rgba(255,207,77,0.25);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .pf-stat-icon svg{width:20px;height:20px;stroke:var(--shine-dim);}
+  .pf-stat-num{font-size:21px;font-weight:800;color:var(--ink-100);line-height:1.2;font-variant-numeric:tabular-nums;}
+  .pf-stat-label{font-size:12.5px;color:var(--ink-500);margin-top:1px;}
+
+  /* ===== menu list card ===== */
+  .pf-menu-card{
+    border-radius:18px;overflow:hidden;
+    background:linear-gradient(165deg, rgba(17,28,56,0.92), rgba(5,9,20,0.97));
+    border:1px solid rgba(232,173,46,0.16);
+  }
+  .pf-menu-row{
+    width:100%;display:flex;align-items:center;gap:14px;
+    padding:16px 18px;background:none;border:none;text-align:left;
+    color:var(--ink-100);font-size:14.5px;font-weight:600;cursor:pointer;
+    font-family:'Noto Sans Thai', sans-serif;
+    border-bottom:1px solid rgba(154,154,164,0.1);
+    text-decoration:none;
+  }
+  .pf-menu-row:last-child{border-bottom:none;}
+  .pf-menu-row:hover{background:rgba(255,207,77,0.05);}
+  .pf-menu-row svg.pf-menu-icon{width:19px;height:19px;stroke:var(--shine-dim);flex-shrink:0;}
+  .pf-menu-row .pf-menu-caret{width:16px;height:16px;stroke:var(--ink-500);margin-left:auto;flex-shrink:0;transition:transform .2s ease;}
+  .pf-menu-row.danger{color:var(--gx-danger,#ff5470);}
+  .pf-menu-row.danger svg.pf-menu-icon{stroke:var(--gx-danger,#ff5470);}
+
+  /* ===== change password panel (inline, collapses open) ===== */
+  .pf-pw-panel{
+    display:none;padding:6px 18px 18px;
+    border-bottom:1px solid rgba(154,154,164,0.1);
+  }
+  .pf-pw-panel.open{display:block;}
+  .pf-pw-field{margin-bottom:12px;}
+  .pf-pw-field label{
+    display:block;margin-bottom:6px;font-size:12px;color:var(--ink-300);
+    font-family:'Noto Sans Thai', sans-serif;
+  }
+  .pf-pw-field input{
+    width:100%;padding:11px 13px;border-radius:10px;
+    border:1px solid rgba(154,154,164,0.16);
+    background:rgba(255,255,255,0.02);color:var(--ink-100);font-size:0.92rem;
+    font-family:'Noto Sans Thai', sans-serif;
+  }
+  .pf-pw-field input:focus{outline:none;border-color:var(--gx-signal,#ffcf4d);}
+  .pf-pw-submit{
+    width:100%;border:none;border-radius:10px;padding:11px;
+    background:linear-gradient(135deg,var(--black-300),var(--black-500));
+    color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;
+    font-family:'Chakra Petch','Noto Sans Thai', sans-serif;
+  }
+  .pf-pw-submit:disabled{opacity:.6;cursor:default;}
+  .pf-pw-msg{
+    margin-top:10px;font-size:12.5px;min-height:1.3em;
+    font-family:'Noto Sans Thai', sans-serif;
+  }
+  .pf-pw-msg.error{color:var(--gx-danger,#ff5470);}
+  .pf-pw-msg.success{color:#3ddc84;}
+
+  .pf-loading-note{text-align:center;opacity:0.6;padding:40px 10px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+
+<div class="wrap pf-font">
+
+  <div class="pf-crumbs">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ໜ້າແຮກ
+    </a>
+    <span>›</span>
+    <span class="pf-current">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      ບັນຊີຂອງຂ້ອຍ
+    </span>
+  </div>
+
+  <h1 class="pf-heading">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    ບັນຊີຂອງຂ້ອຍ
+  </h1>
+  <p class="pf-lead">ຈັດການຂໍ້ມູນສ່ວນຕົວ ແລະ ກວດສອບສະຖານະບັນຊີ</p>
+
+  <div id="profileContent">
+    <div class="pf-loading-note">ກຳລັງໂຫຼດ...</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="profile.js"></script>
+</body>
+</html>
