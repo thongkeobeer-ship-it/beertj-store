@@ -586,7 +586,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ປ່ຽນຂໍ້ຄວາມປຸ່ມຕາມສະຖານະ login (ຄືກັນກັບ GproShop: "ເລືອກເບິ່ງສິນຄ້າ" ຖ້າ login ແລ້ວ, "ເລີ່ມຕົ້ນນຳໃຊ້" ຖ້າຍັງບໍ່ login)
     (async () => {
       const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
-      startBtn.textContent = user ? 'ເລືອກເບິ່ງສິນຄ້າ' : 'ເລີ່ມຕົ້ນນຳໃຊ້';
+      const label = document.getElementById('ctaStartBtnText');
+      if (label) label.textContent = user ? 'ເລືອກເບິ່ງສິນຄ້າ' : 'ເລີ່ມຕົ້ນນຳໃຊ້';
     })();
 
     startBtn.addEventListener('click', async () => {
