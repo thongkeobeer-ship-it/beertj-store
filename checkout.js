@@ -70,7 +70,7 @@ function renderPausedBanner(p){
   }
 }
 
-// ---------- ລິ້ງໂບນັດ (ສະແດງສະເພາະສິນຄ້າທີ່ມີ ແລະ ປົດລັອກເມື່ອຊື້ແລ້ວເທົ່ານັ້ນ) ----------
+// ---------- ລິ້ງໂບນັດ / ສອນລົງ (ສະແດງສະເພາະສິນຄ້າທີ່ມີ, ກົດເບິ່ງໄດ້ເລີຍບໍ່ຕ້ອງຊື້ກ່ອນ) ----------
 async function loadBonusLinks(productId){
   const section = document.getElementById('bonusLinksSection');
   const grid = document.getElementById('bonusLinksGrid');
@@ -86,38 +86,18 @@ async function loadBonusLinks(productId){
   if (error) { console.error(error); section.classList.remove('show'); return; }
   if (!links || !links.length) { section.classList.remove('show'); return; }
 
-  const user = typeof getCurrentUser === 'function' ? await getCurrentUser() : null;
-  let unlocked = false;
-  if (user) {
-    const { data: pastOrders, error: pastErr } = await supabaseClient
-      .from('orders')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('product_id', productId)
-      .eq('status', 'paid')
-      .limit(1);
-    if (pastErr) console.error(pastErr);
-    unlocked = !!(pastOrders && pastOrders.length);
-  }
+  hint.textContent = 'ກົດເບິ່ງລິ້ງລຸ່ມນີ້ໄດ້ເລີຍ';
 
-  hint.textContent = unlocked
-    ? 'ທ່ານເຄີຍຊື້ສິນຄ້ານີ້ແລ້ວ ກົດເບິ່ງລິ້ງລຸ່ມນີ້ໄດ້ເລີຍ'
-    : 'ຕ້ອງຊື້ສິນຄ້ານີ້ຢ່າງໜ້ອຍ 1 ຄັ້ງກ່ອນ ຈຶ່ງຈະກົດເບິ່ງລິ້ງໄດ້';
-
-  const lockIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+  const videoIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="14" height="12" rx="2.5"/><path d="M16.5 10.5 21 7.5v9l-4.5-3"/></svg>';
 
   grid.innerHTML = links.map((l, i) => `
-    <button type="button" class="bonus-link-btn ${unlocked ? '' : 'locked'}" data-url="${encodeURIComponent(l.url)}" data-locked="${unlocked ? '0' : '1'}" style="animation-delay:${(i * 0.15).toFixed(2)}s">
-      ${unlocked ? '' : lockIcon}${l.label}
+    <button type="button" class="bonus-link-btn" data-url="${encodeURIComponent(l.url)}" style="animation-delay:${(i * 0.15).toFixed(2)}s">
+      ${videoIcon}${l.label}
     </button>
   `).join('');
 
   grid.querySelectorAll('.bonus-link-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.locked === '1') {
-        alert('ກະລຸນາຊື້ສິນຄ້ານີ້ກ່ອນ ຈຶ່ງຈະກົດເບິ່ງລິ້ງນີ້ໄດ້');
-        return;
-      }
       window.open(decodeURIComponent(btn.dataset.url), '_blank', 'noopener');
     });
   });
