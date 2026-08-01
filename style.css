@@ -148,6 +148,21 @@ body{
 @media (prefers-reduced-motion: reduce){
   .brand-mark{ animation:none; }
 }
+.navbar-name-logo{
+  display:block;
+  height:40px;
+  width:auto;
+  max-width:100%;
+  object-fit:contain;
+  flex:0 1 auto;
+  animation:brandFloat 3.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  .navbar-name-logo{ animation:none; }
+}
+@media (max-width:480px){
+  .navbar-name-logo{ height:32px; }
+}
 .brand-name{
   font-weight:800;font-size:19px;letter-spacing:1.1px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -2447,6 +2462,15 @@ body{
   max-width:100%;
   object-fit:contain;
   margin-left:-2px;
+}
+.hero-name-text{
+  display:block;
+  font-size:44px !important;
+  line-height:1.05;
+  letter-spacing:1px;
+}
+@media (max-width:480px){
+  .hero-name-text{ font-size:34px !important; }
 }
 .hero-name-letter{
   position:relative;
