@@ -263,6 +263,13 @@ async function renderAuthUI() {
       ? `<span class="acct-dd-badge is-admin"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/></svg> ADMIN</span>`
       : `<span class="acct-dd-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg> MEMBER</span>`;
 
+    const acctAdminLinkHtml = acctAdmin
+      ? `<a class="acct-dd-link" href="admin.html" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg>
+              ຫ້ອງຄວບຄຸມແອດມິນ
+            </a>`
+      : '';
+
     authSlot.innerHTML = `
       <div class="acct-slot" id="acctSlot">
         <button class="acct-avatar-btn" id="acctAvatarBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="ບັນຊີຂອງຂ້ອຍ" title="ບັນຊີຂອງຂ້ອຍ">
@@ -275,6 +282,7 @@ async function renderAuthUI() {
             <div class="acct-dd-balance">ຍອດເງິນ: <b>${acctFormatBaht(acctBalance)}</b></div>
           </div>
           <nav class="acct-dd-nav">
+            ${acctAdminLinkHtml}
             <a class="acct-dd-link" href="profile.html" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="19" cy="16" r="2.2"/><path d="M19 12.5v1M19 18.5v1M21.6 14.8l-.9.5M17.3 17.7l-.9.5M21.6 17.2l-.9-.5M17.3 14.3l-.9-.5"/></svg>
               ຈັດການໂປຣໄຟລ໌
