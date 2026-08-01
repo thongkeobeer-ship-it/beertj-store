@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ประวัติการเติมเงิน</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ສະໄຕລ໌ເພີ່ມສະເພາະໜ້ານີ້ (ບໍ່ໄປແກ້ style.css ຫຼັກ) — ອ້າງອີງໂຕນດຽວກັບ orders.html */
+  .th-list{ display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+  .th-card{
+    background: var(--card-bg, rgba(255,255,255,0.04));
+    border: 1px solid rgba(184,134,11,0.18);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .th-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .th-card-amount{ font-weight:800; font-size:18px; color:var(--ink-100); font-variant-numeric:tabular-nums; }
+  .th-card-meta{ font-size:12.5px; opacity:0.7; margin-top:2px; }
+  .th-card-ref{ font-size:11.5px; opacity:0.55; }
+  .th-status{
+    font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;
+    background:rgba(32,181,106,0.14); color:#20b56a; white-space:nowrap;
+  }
+  .th-status[data-status="pending"]{ background:rgba(255,196,0,0.14); color:#c88a00; }
+  .th-status[data-status="rejected"]{ background:rgba(255,90,90,0.14); color:#e0455a; }
+  .empty-note{ text-align:center; opacity:0.6; padding:40px 10px; font-size:14px; }
+  .loading-note{ text-align:center; opacity:0.6; padding:40px 10px; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="ambient-glow">
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-navy"></div>
+  <div class="orb orb-gold-soft"></div>
+</div>
+<div class="wrap">
+
+  <div class="back-row">
+    <button class="back-btn" id="backBtn" aria-label="ກັບຄືນ">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="page-title">ประวัติการเติมเงิน</h1>
+  </div>
+
+  <div id="topupHistoryList" class="th-list">
+    <div class="loading-note">กำลังโหลด...</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="topup-history.js"></script>
+</body>
+</html>
