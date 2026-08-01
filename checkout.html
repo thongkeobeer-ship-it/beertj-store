@@ -51,32 +51,51 @@
   }
   .duration-grid{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .duration-pill{
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 10px 6px;
-    border-radius: 12px;
-    border: 1.5px solid rgba(255,207,77,0.25);
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(255,207,77,0.16);
     background: var(--navy-800);
     cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     transition: border-color .15s ease, background .15s ease, opacity .15s ease;
   }
   .duration-pill .dp-price{
-    font-size: 0.72rem;
-    font-weight: 500;
-    opacity: 0.7;
+    font-size: 0.95rem;
+    font-weight: 700;
+    opacity: 1;
+    color: #ffd76a;
+  }
+  .duration-pill .dp-check{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .duration-pill .dp-check svg{
+    width: 20px;
+    height: 20px;
+    stroke: #ffd76a;
   }
   .duration-pill.selected{
     border-color: #e8ad2e;
-    background: rgba(255,207,77,0.1);
-    color: #ffd76a;
+    background: rgba(255,207,77,0.08);
+  }
+  .duration-pill.selected .dp-check{
+    display: flex;
   }
   .duration-pill.disabled{
     opacity: 0.4;
@@ -91,23 +110,6 @@
     background: #171a24;
     color: #8b93a7;
     cursor: not-allowed;
-  }
-
-  /* ===== ປຸ່ມຢືນຢັນລອຍຄ້າງໄວ້ລຸ່ມສຸດຂອງໜ້າຈໍ (ຄືກັບໜ້າຕົວຢ່າງ) ===== */
-  body{ padding-bottom: 96px; }
-  .confirm-bar{
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    z-index: 40;
-    padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
-    background: linear-gradient(180deg, rgba(11,13,20,0) 0%, var(--navy-900) 32%);
-  }
-  .confirm-bar-inner{
-    max-width: 480px;
-    margin: 0 auto;
-  }
-  .confirm-btn{
-    margin-top: 0 !important;
   }
 
   /* ===== ສິນຄ້າຢຸດຂາຍຊົ່ວຄາວ ===== */
@@ -233,12 +235,6 @@
     </div>
   </div>
 
-  <!-- NOTE FIELD -->
-  <div class="order-note">
-    <label for="orderNoteInput" id="orderNoteLabel">ລາຍລະອຽດ</label>
-    <textarea id="orderNoteInput" placeholder="ຕົວຢ່າງ: ຂໍໃຫ້ຫໍ່ແຍກ, ສົ່ງຫຼັງ 18:00, ຂະໜາດ M ..."></textarea>
-  </div>
-
   <!-- ORDER SUMMARY -->
   <div class="order-summary">
     <div class="summary-row">
@@ -251,18 +247,20 @@
     </div>
   </div>
 
+  <!-- CONFIRM BUTTON -->
+  <button class="confirm-btn" id="confirmBtn">
+    ຢືນຢັນການສັ່ງຊື້
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+
   <div class="order-id" id="orderRef">&nbsp;</div>
 
-</div>
-
-<!-- ປຸ່ມຢືນຢັນ ລອຍຄ້າງໄວ້ລຸ່ມສຸດຂອງໜ້າຈໍ -->
-<div class="confirm-bar">
-  <div class="confirm-bar-inner">
-    <button class="confirm-btn" id="confirmBtn">
-      ຢືນຢັນການສັ່ງຊື້
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
+  <!-- NOTE FIELD -->
+  <div class="order-note">
+    <label for="orderNoteInput" id="orderNoteLabel">ລາຍລະອຽດ</label>
+    <textarea id="orderNoteInput" placeholder="ຕົວຢ່າງ: ຂໍໃຫ້ຫໍ່ແຍກ, ສົ່ງຫຼັງ 18:00, ຂະໜາດ M ..."></textarea>
   </div>
+
 </div>
 
 <!-- SUCCESS OVERLAY -->
