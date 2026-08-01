@@ -4,7 +4,8 @@
 // ============================================
 
 function formatBaht(n) {
-  return '฿' + Number(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  // ໝາຍເຫດ: ຊື່ຟັງຊັນຍັງເອີ້ນວ່າ formatBaht ຄືເກົ່າ (ບໍ່ໄປແກ້ຊື່ທົ່ວທຸກບ່ອນ) ແຕ່ຕອນນີ້ຄືນຄ່າເປັນ "ກີບ" (₭) ໃຫ້ກົງກັບສະກຸນເງິນທີ່ໃຊ້ຈິງໃນຮ້ານ
+  return Number(n || 0).toLocaleString('en-US') + ' ₭';
 }
 
 function formatJoinDate(iso) {
@@ -80,7 +81,7 @@ function renderProfile(user, admin, balance, stats) {
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           ເຕີມເງິນ
         </a>
-        <a class="pf-wallet-btn outline" href="topup.html">
+        <a class="pf-wallet-btn outline" href="topup-history.html">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
           ປະຫວັດ
         </a>
@@ -114,7 +115,7 @@ function renderProfile(user, admin, balance, stats) {
         ສະຖານະຄຳສັ່ງຊື້
         <svg class="pf-menu-caret" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
-      <a class="pf-menu-row" href="topup.html">
+      <a class="pf-menu-row" href="topup-history.html">
         <svg class="pf-menu-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
         ປະຫວັດການເຕີມເງິນ
         <svg class="pf-menu-caret" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
