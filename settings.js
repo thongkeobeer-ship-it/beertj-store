@@ -197,10 +197,58 @@ function applyAnnouncement(text) {
   restartAnnounceMarquee();
 }
 
-// ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic) ----------
-// ໂຊວ໌ຮູບພາບ (ຖ້າແອດມິນອັບໂຫລດໄວ້) ເທົ່ານັ້ນ — ບໍ່ໂຊວ໌ຊື່ໝວດໝູ່ຢູ່ເທິງ card ອີກຕໍ່ໄປ (ຮູບພາບຫຼາຍອັນມີ text ຢູ່ໃນຕົວແລ້ວ)
+// ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic — ແບບ banner card ມີຊື່ + ລາຄາ + ຈຳນວນສິນຄ້າ) ----------
 // ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ
-function renderCategoryCards(settings) {
+function formatCatKipNumber(n) {
+  return Number(n || 0).toLocaleString('en-US');
+}
+function formatCatKipRange(min, max) {
+  if (min === max) return formatCatKipNumber(min) + ' ກີບ';
+  return formatCatKipNumber(min) + ' – ' + formatCatKipNumber(max) + ' ກີບ';
+}
+
+// ຄິດໄລ່ຈຳນວນສິນຄ້າ + ຊ່ວງລາຄາ (ຕ່ຳ -> ສູງ) ຈິງຂອງແຕ່ລະໝວດ, ຄືກັນກັບໜ້າ categories.html
+async function computeCatCategoryStats() {
+  const stats = {};
+  if (typeof supabaseClient === 'undefined') return stats;
+
+  const { data: products, error } = await supabaseClient
+    .from('products')
+    .select('id, category, price, duration_enabled, archived')
+    .eq('archived', false);
+
+  if (error) { console.error(error); return stats; }
+  if (!products || !products.length) return stats;
+
+  const durationProductIds = products.filter(p => p.duration_enabled).map(p => p.id);
+  const minPriceByProduct = {};
+
+  if (durationProductIds.length) {
+    const { data: durations, error: durError } = await supabaseClient
+      .from('product_durations')
+      .select('product_id, price')
+      .in('product_id', durationProductIds);
+    if (durError) console.error(durError);
+    (durations || []).forEach((d) => {
+      const cur = minPriceByProduct[d.product_id];
+      if (cur === undefined || (d.price || 0) < cur) minPriceByProduct[d.product_id] = d.price || 0;
+    });
+  }
+
+  products.forEach((p) => {
+    const cat = (p.category || '').trim();
+    if (!cat) return;
+    const price = p.duration_enabled ? (minPriceByProduct[p.id] ?? 0) : (p.price || 0);
+    if (!stats[cat]) stats[cat] = { count: 0, min: price, max: price };
+    stats[cat].count += 1;
+    if (price < stats[cat].min) stats[cat].min = price;
+    if (price > stats[cat].max) stats[cat].max = price;
+  });
+
+  return stats;
+}
+
+async function renderCategoryCards(settings) {
   const container = document.getElementById('categoryCardsDynamic');
   if (!container) return;
 
@@ -208,21 +256,45 @@ function renderCategoryCards(settings) {
   const prevActive = container.querySelector('.cat-card.is-active');
   const prevActiveCategory = prevActive ? prevActive.dataset.category : null;
 
+  const stats = await computeCatCategoryStats();
+
   let html = '';
   for (let i = 1; i <= 10; i++) {
     const name = String(settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
     const safeName = name.replace(/"/g, '&quot;');
+    const safeTitle = name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const image = settings[`category_${i}_image`];
     const isActive = (prevActiveCategory && prevActiveCategory === name) ? ' is-active' : '';
     const hasImageClass = image ? ' has-image' : '';
-    const imgHtml = image ? `<img class="cat-card-media" src="${image}" alt="${safeName}">` : '';
-    html += `<div class="cat-card${isActive}${hasImageClass}" data-category="${safeName}" data-cat-slot="${i}">${imgHtml}</div>`;
+    const imgHtml = image
+      ? `<img class="cat-card-media-img" src="${image}" alt="${safeName}" loading="lazy">`
+      : '';
+
+    const stat = stats[name];
+    const count = stat ? stat.count : 0;
+    const priceHtml = (stat && count > 0)
+      ? `<span class="cat-card-price">${formatCatKipRange(stat.min, stat.max)}</span>`
+      : '';
+
+    html += `
+    <div class="cat-card${isActive}${hasImageClass}" data-category="${safeName}" data-cat-slot="${i}">
+      <div class="cat-card-media">${imgHtml}</div>
+      <div class="cat-card-body">
+        <div class="cat-card-title-row">
+          <span class="cat-card-title">${safeTitle}</span>
+          ${priceHtml}
+        </div>
+        <span class="cat-card-count">ສິນຄ້າທັງໝົດ ${count} ລາຍການ</span>
+      </div>
+    </div>`;
   }
   container.innerHTML = html;
 
   // ຜູກ event ຄລິກໃສ່ card ໃໝ່ (ຟັງຊັນນີ້ຢູ່ script.js, ຮອງຮັບການເອີ້ນຊ້ຳຫຼາຍຄັ້ງໄດ້ຢ່າງປອດໄພ)
   if (typeof buildCategoryFilter === 'function') buildCategoryFilter();
 }
+
+
 
 // ---------- ຮູບ hero ໜ້າຫຼັກ (ຖ້າແອດມິນອັບໂຫລດຮູບໄວ້ ຈະໃຊ້ຮູບແທນວິດີໂອ hero-live.mp4 ຄ່າເລີ່ມຕົ້ນ) ----------
 function applyHeroImage(url) {

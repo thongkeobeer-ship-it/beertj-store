@@ -240,7 +240,7 @@ function buildCategoryFilter(){
 
       // ໜ້ານີ້ບໍ່ມີກາດສິນຄ້າຢູ່ໃນໜ້າ (ເຊັ່ນ: ໜ້າຫຼັກ) -> ໄປໜ້າສິນຄ້າແຍກຕ່າງຫາກ ກັ່ນຕອງຕາມໝວດນີ້
       if (!grid) {
-        const title = card.querySelector('h3')?.textContent || '';
+        const title = card.querySelector('.cat-card-title')?.textContent || '';
         window.location.href = (cat === 'all')
           ? 'products.html'
           : 'products.html?cat=' + encodeURIComponent(cat) + '&catLabel=' + encodeURIComponent(title);
@@ -251,7 +251,7 @@ function buildCategoryFilter(){
       document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('is-active'));
       card.classList.add('is-active');
       renderProducts(currentCategory);
-      const title = card.querySelector('h3')?.textContent || 'ໝວດໝູ່';
+      const title = card.querySelector('.cat-card-title')?.textContent || 'ໝວດໝູ່';
       showToast(`ກຳລັງສະແດງ: ${title}`);
     });
   });
