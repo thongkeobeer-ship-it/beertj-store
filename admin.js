@@ -132,10 +132,9 @@ async function loadProducts() {
 
 // ---------- ຕົວເລືອກໝວດໝູ່ (ຊື່ໝວດໝູ່ຫຼັກຈາກການຕັ້ງຄ່າຮ້ານ + ໝວດໝູ່ອື່ນທີ່ມີໃນສິນຄ້າຢູ່ແລ້ວ) ----------
 function getCurrentCategoryNames() {
-  const s = currentSiteSettings || {};
   const names = [];
   for (let i = 1; i <= 10; i++) {
-    names.push(s[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
+    names.push(String(i));
   }
   return names;
 }
@@ -1215,6 +1214,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (!name) return;
+    if (!categorySelect) {
+      setMsg(msg, 'ກະລຸນາເລືອກໝວດໝູ່ກ່ອນຈຶ່ງຈະເພີ່ມສິນຄ້າໄດ້', 'error');
+      return;
+    }
     if (categorySelect === '__new__' && !document.getElementById('pCategoryNew').value.trim()) {
       setMsg(msg, 'ກະລຸນາພິມຊື່ໝວດໝູ່ໃໝ່', 'error');
       return;

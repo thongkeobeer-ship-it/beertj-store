@@ -644,7 +644,7 @@ img.media-photo{
   .cat-card, .product-card{opacity:1;transform:none;}
 }
 .product-media{
-  height:130px;
+  height:180px;
   background:repeating-linear-gradient(135deg, rgba(255,207,77,0.05) 0 10px, transparent 10px 20px), var(--navy-800);
   display:flex;align-items:center;justify-content:center;
   color:var(--ink-500);font-size:12.5px;
@@ -2211,7 +2211,7 @@ body{
 .product-card.is-paused{ border-color:rgba(234,179,8,0.35) !important; }
 .product-media{
   position:relative;
-  aspect-ratio:1/1;
+  height:180px;
   background:var(--gp-card-2);
   overflow:hidden;
   padding:8px;
@@ -2234,31 +2234,31 @@ body{
 }
 
 .product-body{
-  padding:12px 12px 14px !important;
-  display:flex; flex-direction:column; gap:5px;
+  padding:14px 13px 16px !important;
+  display:flex; flex-direction:column; gap:6px;
 }
 .product-eyebrow{ display:none !important; }
 .product-title{
-  font-size:13.5px !important; font-weight:700 !important;
+  font-size:14.5px !important; font-weight:800 !important;
   color:var(--gp-white) !important;
   line-height:1.35;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   min-height:1.35em;
 }
-.price-label{ font-size:11.5px; color:var(--gp-text-dim); }
+.price-label{ font-size:11.5px; color:var(--gp-text-dim); margin-bottom:1px; }
 
 .product-footer{
   display:flex !important; align-items:center !important; justify-content:space-between !important;
-  margin:0 0 4px !important;
+  margin:0 0 6px !important;
 }
 .price{
-  font-size:17px !important; font-weight:800 !important;
+  font-size:19px !important; font-weight:800 !important;
   color:var(--gp-white) !important; background:none !important;
   -webkit-text-fill-color:var(--gp-white) !important; animation:none !important; text-shadow:none !important;
 }
 .product-status{
-  font-size:11px !important; font-weight:700 !important;
-  padding:4px 9px !important; border-radius:999px !important;
+  font-size:11.5px !important; font-weight:700 !important;
+  padding:5px 10px !important; border-radius:999px !important;
   display:inline-flex !important; align-items:center; gap:0 !important;
   white-space:nowrap;
 }
@@ -2270,17 +2270,18 @@ body{
 .buy-btn{
   width:100% !important;
   background:var(--gp-white) !important; color:#000 !important;
-  border:none !important; border-radius:10px !important;
-  padding:10px 0 !important; font-size:13px !important; font-weight:800 !important;
+  border:none !important; border-radius:12px !important;
+  padding:12px 0 !important; font-size:14px !important; font-weight:800 !important;
   box-shadow:none !important;
+  margin-top:2px;
 }
 .buy-btn:hover{ background:#eee !important; }
 .buy-btn.is-disabled{ background:#2a2d36 !important; color:#8a8f9c !important; }
 .buy-btn span{ display:none !important; }
 
 .stock{
-  text-align:center !important; margin-top:6px !important;
-  font-size:11.5px !important; color:var(--gp-text-dim) !important;
+  text-align:center !important; margin-top:8px !important;
+  font-size:12px !important; color:var(--gp-text-dim) !important;
 }
 
 /* ---- ລາຍການສັ່ງຊື້ລ່າສຸດ (latest-orders-row) — ເລື່ອນຊ້າຍອັດຕະໂນມັດ ວົນຊ້ຳໄປເລື່ອຍໆ ==== */
