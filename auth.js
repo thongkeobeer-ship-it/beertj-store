@@ -149,7 +149,7 @@ function injectAccountMenuStyles() {
       background:linear-gradient(165deg, rgba(19,22,32,0.98), rgba(5,7,12,0.99));
       border:1px solid rgba(232,173,46,0.25); border-radius:16px;
       box-shadow:0 14px 34px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,207,77,0.05);
-      padding:16px 0 8px; z-index:60; font-family:'Noto Sans Thai','Chakra Petch',sans-serif;
+      padding:16px 0 8px; z-index:60; font-family:'Chakra Petch','Noto Sans Lao',sans-serif;
       opacity:0; visibility:hidden; transform:translateY(-8px) scale(0.97); pointer-events:none;
       transition:opacity .18s ease, transform .18s ease, visibility .18s;
     }
@@ -202,7 +202,7 @@ function injectWalletStyles() {
       padding:7px 13px;border-radius:20px;
       background:linear-gradient(135deg, rgba(232,173,46,0.12), rgba(32,181,106,0.08));
       border:1px solid rgba(232,173,46,0.28);
-      font-family:'Chakra Petch','Noto Sans Thai',sans-serif;
+      font-family:'Chakra Petch','Noto Sans Lao',sans-serif;
       font-weight:700;font-size:12.5px;color:#b8860b;
       white-space:nowrap;transition:box-shadow .2s ease;
     }
