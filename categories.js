@@ -82,11 +82,11 @@
     <a class="category-banner-card" href="products.html?cat=${encodeURIComponent(name)}&catLabel=${encodeURIComponent(name)}">
       <div class="category-banner-media">${mediaHtml}</div>
       <div class="category-banner-body">
-        <div class="category-banner-title">${safeTitle}</div>
-        <div class="category-banner-meta">
-          <span class="category-banner-count">ສິນຄ້າທັງໝົດ ${count} ລາຍການ</span>
+        <div class="category-banner-title-row">
+          <span class="category-banner-title">${safeTitle}</span>
           ${priceHtml}
         </div>
+        <span class="category-banner-count">ສິນຄ້າທັງໝົດ ${count} ລາຍການ</span>
       </div>
     </a>`;
   }
