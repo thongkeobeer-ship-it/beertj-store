@@ -349,7 +349,7 @@ async function hardDeleteProduct(id, row) {
   if (!p) return;
 
   const ok = confirm(
-    `ລຶບ "${p.name || 'ສິນຄ້ານີ້'}" ຖາວອນ?\n\nຈະລຶບຂໍ້ມູນສິນຄ້າ, ໄລຍະເວລາ, ລິ້ງໂບນັດ ແລະ ລະຫັດຄົງເຫຼືອທັງໝົດຂອງສິນຄ້ານີ້ອອກຈາກລະບົບ. ບໍ່ສາມາດກູ້ຄືນໄດ້.\n\n(ຖ້າຢາກແຕ່ເຊື່ອງໄວ້ ແລະ ຍັງເກັບປະຫວັດໄວ້ ໃຫ້ໃຊ້ປຸ່ມ "ເອົາອອກຈາກໜ້າຮ້ານ" ແທນ)`
+    `ລຶບ "${p.name || 'ສິນຄ້ານີ້'}" ຖາວອນ?\n\nຈະລຶບຂໍ້ມູນສິນຄ້າ, ໄລຍະເວລາ, ລິ້ງໂບນັດ ແລະ ລະຫັດຄົງເຫຼືອທັງໝົດຂອງສິນຄ້ານີ້ອອກຈາກລະບົບ. ບໍ່ສາມາດກູ້ຄືນໄດ້.\n\nຖ້າສິນຄ້ານີ້ເຄີຍມີຄົນສັ່ງຊື້ໄປແລ້ວ, ອໍເດີເກົ່າຈະຍັງຄົງຢູ່ໃນປະຫວັດ ແຕ່ຈະບໍ່ສະແດງຊື່ສິນຄ້ານີ້ອີກຕໍ່ໄປ (ເນື່ອງຈາກສິນຄ້າຖືກລຶບໄປແລ້ວ).\n\n(ຖ້າຢາກແຕ່ເຊື່ອງໄວ້ ແລະ ຍັງເກັບປະຫວັດໄວ້ຄົບ ໃຫ້ໃຊ້ປຸ່ມ "ເອົາອອກຈາກໜ້າຮ້ານ" ແທນ)`
   );
   if (!ok) return;
 
@@ -359,7 +359,31 @@ async function hardDeleteProduct(id, row) {
   }
 
   try {
-    // ລຶບແຖວທີ່ອ້າງອີງເຖິງສິນຄ້ານີ້ກ່ອນ (ລະຫັດ, ໄລຍະເວລາ, ລິ້ງໂບນັດ) ເພື່ອບໍ່ໃຫ້ຕິດ foreign key
+    // ຫາລາຍການໄລຍະເວລາທັງໝົດຂອງສິນຄ້ານີ້ກ່ອນ (ໃຊ້ nullify ອໍເດີເກົ່າທີ່ອ້າງອີງມາ)
+    const { data: durRows, error: durFetchErr } = await supabaseClient
+      .from('product_durations')
+      .select('id')
+      .eq('product_id', id);
+    if (durFetchErr) throw durFetchErr;
+    const durationIds = (durRows || []).map(d => d.id);
+
+    // ອໍເດີເກົ່າອາດຈະອ້າງອີງ product_id/duration_id ຂອງສິນຄ້ານີ້ຢູ່ (foreign key)
+    // ຕ້ອງ nullify ກ່ອນ ບໍ່ດັ່ງນັ້ນຈະລຶບບໍ່ໄດ້ — ອໍເດີເກົ່າຍັງຢູ່ຄົບ ພຽງແຕ່ບໍ່ອ້າງອີງສິນຄ້ານີ້ອີກ
+    if (durationIds.length) {
+      const { error: nullDurErr } = await supabaseClient
+        .from('orders')
+        .update({ duration_id: null })
+        .in('duration_id', durationIds);
+      if (nullDurErr) throw nullDurErr;
+    }
+
+    const { error: nullProdErr } = await supabaseClient
+      .from('orders')
+      .update({ product_id: null })
+      .eq('product_id', id);
+    if (nullProdErr) throw nullProdErr;
+
+    // ລຶບແຖວທີ່ອ້າງອີງເຖິງສິນຄ້ານີ້ (ລະຫັດ, ໄລຍະເວລາ, ລິ້ງໂບນັດ) ເພື່ອບໍ່ໃຫ້ຕິດ foreign key
     const { error: codesErr } = await supabaseClient.from('product_codes').delete().eq('product_id', id);
     if (codesErr) throw codesErr;
 
