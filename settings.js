@@ -21,6 +21,23 @@ const DEFAULT_SITE_SETTINGS = {
   category_1_name: 'ໝວດໝູ່ 1',
   category_2_name: 'ໝວດໝູ່ 2',
   category_3_name: 'ໝວດໝູ່ 3',
+  category_4_name: 'ໝວດໝູ່ 4',
+  category_5_name: 'ໝວດໝູ່ 5',
+  category_6_name: 'ໝວດໝູ່ 6',
+  category_7_name: 'ໝວດໝູ່ 7',
+  category_8_name: 'ໝວດໝູ່ 8',
+  category_9_name: 'ໝວດໝູ່ 9',
+  category_10_name: 'ໝວດໝູ່ 10',
+  category_1_image: null,
+  category_2_image: null,
+  category_3_image: null,
+  category_4_image: null,
+  category_5_image: null,
+  category_6_image: null,
+  category_7_image: null,
+  category_8_image: null,
+  category_9_image: null,
+  category_10_image: null,
   // ລິ້ງຊ່ອງທາງໂຊເຊียລ — ແກ້ໄຂໄດ້ຈາກຫ້ອງຄວບຄຸມແອດມິນ > ຕັ້ງຄ່າຮ້ານ > ຊ່ອງທາງໂຊເຊียລ
   social_facebook: null,
   social_discord: null,
@@ -178,25 +195,47 @@ function applyAnnouncement(text) {
   restartAnnounceMarquee();
 }
 
-// ---------- ໝວດໝູ່ (ປ່ຽນຊື່ໝວດ ແລະ ອັບເດດ card ໃນໜ້າຫຼັກ) ----------
-function applyCategoryNames(settings) {
-  const map = [
-    { key: 'category_1_name', defaultVal: 'ໝວດໝູ່ 1' },
-    { key: 'category_2_name', defaultVal: 'ໝວດໝູ່ 2' },
-    { key: 'category_3_name', defaultVal: 'ໝວດໝູ່ 3' }
-  ];
-  map.forEach(({ key, defaultVal }) => {
-    const newName = settings[key] || defaultVal;
-    // ຄັ້ງທຳອິດ card ຍັງໃຊ້ຊື່ default ຢູ່ — ຄັ້ງຕໍ່ໆໄປ card ຈະຖືກປ່ຽນ data-category ໄປແລ້ວ
-    // ຈຶ່ງເກັບຊື່ default ອັນທຳອິດໄວ້ໃນ data-default-category ເພື່ອຫາ card ນີ້ໄດ້ສະເໝີ
-    let card = document.querySelector(`.cat-card[data-default-category="${defaultVal}"]`);
-    if (!card) card = document.querySelector(`.cat-card[data-category="${defaultVal}"]`);
-    if (!card) return;
-    if (!card.dataset.defaultCategory) card.dataset.defaultCategory = defaultVal;
-    card.dataset.category = newName;
-    const h3 = card.querySelector('h3');
-    if (h3) h3.textContent = newName;
-  });
+// ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic, ໃຊ້ຮູບພາບແທນວິດີໂອຖ້າແອດມິນອັບໂຫລດໄວ້) ----------
+// ວິດີໂອຄ່າເລີ່ມຕົ້ນ: ມີສະເພາະໝວດ 1-3 (ໄຟລ໌ເດີມ), ໝວດ 4-10 ຖ້າບໍ່ມີຮູບຈະໃຊ້ cat-all.mp4 ແທນ
+const CATEGORY_DEFAULT_MEDIA = {
+  1: 'cat-1.mp4',
+  2: 'cat-2.mp4',
+  3: 'cat-3.mp4'
+};
+
+function categoryCardMediaHtml(imageUrl, fallbackVideo) {
+  if (imageUrl) {
+    return `<img class="cat-card-media" src="${imageUrl}" alt="" onerror="this.remove()">`;
+  }
+  const video = fallbackVideo || 'cat-all.mp4';
+  return `<video class="cat-card-media" src="${video}" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>`;
+}
+
+function renderCategoryCards(settings) {
+  const container = document.getElementById('categoryCardsDynamic');
+  if (!container) return;
+
+  // ຮັກສາໝວດໝູ່ທີ່ກຳລັງເລືອກຢູ່ໄວ້ (ຖ້າມີ) ເຜື່ອຕອນ re-render ຫຼັງແອດມິນແກ້ໄຂການຕັ້ງຄ່າແບບສົດໆ
+  const prevActive = container.querySelector('.cat-card.is-active');
+  const prevActiveCategory = prevActive ? prevActive.dataset.category : null;
+
+  let html = '';
+  for (let i = 1; i <= 10; i++) {
+    const name = String(settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
+    const image = settings[`category_${i}_image`];
+    const media = categoryCardMediaHtml(image, CATEGORY_DEFAULT_MEDIA[i]);
+    const safeName = name.replace(/"/g, '&quot;');
+    const isActive = (prevActiveCategory && prevActiveCategory === name) ? ' is-active' : '';
+    html += `
+      <div class="cat-card${isActive}" data-category="${safeName}" data-cat-slot="${i}">
+        ${media}
+        <h3 class="shine-text">${name.replace(/</g, '&lt;')}</h3>
+      </div>`;
+  }
+  container.innerHTML = html;
+
+  // ຜູກ event ຄລິກໃສ່ card ໃໝ່ (ຟັງຊັນນີ້ຢູ່ script.js, ຮອງຮັບການເອີ້ນຊ້ຳຫຼາຍຄັ້ງໄດ້ຢ່າງປອດໄພ)
+  if (typeof buildCategoryFilter === 'function') buildCategoryFilter();
 }
 
 async function applySiteSettings() {
@@ -208,7 +247,7 @@ async function applySiteSettings() {
   applyTagline(settings.tagline);
   applyAnnouncement(settings.announcement_text);
   applyQr(settings);
-  applyCategoryNames(settings);
+  renderCategoryCards(settings);
   applySocialLinks(settings);
 
   return settings;

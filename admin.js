@@ -133,11 +133,11 @@ async function loadProducts() {
 // ---------- ຕົວເລືອກໝວດໝູ່ (ຊື່ໝວດໝູ່ຫຼັກຈາກການຕັ້ງຄ່າຮ້ານ + ໝວດໝູ່ອື່ນທີ່ມີໃນສິນຄ້າຢູ່ແລ້ວ) ----------
 function getCurrentCategoryNames() {
   const s = currentSiteSettings || {};
-  return [
-    s.category_1_name || 'ໝວດໝູ່ 1',
-    s.category_2_name || 'ໝວດໝູ່ 2',
-    s.category_3_name || 'ໝວດໝູ່ 3'
-  ];
+  const names = [];
+  for (let i = 1; i <= 10; i++) {
+    names.push(s[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
+  }
+  return names;
 }
 
 function renderCategoryOptions(products) {
@@ -654,13 +654,31 @@ function fillDropzonePreview(zoneId, textId, inputId, url) {
   img.src = url;
 }
 
+// ຄືກັນກັບ fillDropzonePreview ແຕ່ຮອງຮັບກໍລະນີ "ລຶບຮູບອອກແລ້ວ" ນຳ (ຄືນ dropzone ກັບໄປເປັນ placeholder ເລີ່ມຕົ້ນ)
+// ໃຊ້ກັບຮູບໝວດໝູ່ ເພາະສາມາດຖືກລຶບອອກໄດ້ (ຕ່າງຈາກໂລໂກ້/QR ທີ່ມີແຕ່ "ປ່ຽນຮູບ")
+function resetDropzoneIfEmpty(zoneId, textId, inputId, url, placeholderMsg) {
+  const zone = document.getElementById(zoneId);
+  if (!zone) return;
+  if (url) {
+    fillDropzonePreview(zoneId, textId, inputId, url);
+    return;
+  }
+  zone.classList.remove('has-image');
+  const img = zone.querySelector('img');
+  if (img) img.remove();
+  if (!document.getElementById(textId)) {
+    const span = document.createElement('span');
+    span.id = textId;
+    span.textContent = placeholderMsg;
+    const input = document.getElementById(inputId);
+    zone.insertBefore(span, input || null);
+  }
+}
+
 function loadSiteSettingsIntoForm(settings) {
   const nameInput = document.getElementById('settingStoreName');
   const taglineInput = document.getElementById('settingTagline');
   const announceInput = document.getElementById('settingAnnouncement');
-  const cat1Input = document.getElementById('settingCat1');
-  const cat2Input = document.getElementById('settingCat2');
-  const cat3Input = document.getElementById('settingCat3');
   const socialFacebookInput = document.getElementById('settingSocialFacebook');
   const socialDiscordInput = document.getElementById('settingSocialDiscord');
   const socialLineInput = document.getElementById('settingSocialLine');
@@ -672,9 +690,6 @@ function loadSiteSettingsIntoForm(settings) {
   if (nameInput && document.activeElement !== nameInput) nameInput.value = settings.store_name || '';
   if (taglineInput && document.activeElement !== taglineInput) taglineInput.value = settings.tagline || '';
   if (announceInput && document.activeElement !== announceInput) announceInput.value = settings.announcement_text || '';
-  if (cat1Input && document.activeElement !== cat1Input) cat1Input.value = settings.category_1_name || 'ໝວດໝູ່ 1';
-  if (cat2Input && document.activeElement !== cat2Input) cat2Input.value = settings.category_2_name || 'ໝວດໝູ່ 2';
-  if (cat3Input && document.activeElement !== cat3Input) cat3Input.value = settings.category_3_name || 'ໝວດໝູ່ 3';
   if (socialFacebookInput && document.activeElement !== socialFacebookInput) socialFacebookInput.value = settings.social_facebook || '';
   if (socialDiscordInput && document.activeElement !== socialDiscordInput) socialDiscordInput.value = settings.social_discord || '';
   if (socialLineInput && document.activeElement !== socialLineInput) socialLineInput.value = settings.social_line || '';
@@ -682,6 +697,19 @@ function loadSiteSettingsIntoForm(settings) {
   if (socialWhatsappInput && document.activeElement !== socialWhatsappInput) socialWhatsappInput.value = settings.social_whatsapp || '';
   if (qrLabel1Input && document.activeElement !== qrLabel1Input) qrLabel1Input.value = settings.qr_label || '';
   if (qrLabel2Input && document.activeElement !== qrLabel2Input) qrLabel2Input.value = settings.qr_label_2 || '';
+
+  // ໝວດໝູ່ 1-10: ຊື່ + ຮູບພາບ (ຖ້າ input/dropzone ບໍ່ມີໃນໜ້າ ຈະຂ້າມໄປແບບປອດໄພ)
+  for (let i = 1; i <= 10; i++) {
+    const catInput = document.getElementById(`settingCat${i}`);
+    if (catInput && document.activeElement !== catInput) {
+      catInput.value = settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`;
+    }
+    resetDropzoneIfEmpty(
+      `catImgDrop${i}`, `catImgDropText${i}`, `catImgInput${i}`,
+      settings[`category_${i}_image`],
+      'ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)'
+    );
+  }
 
   fillDropzonePreview('logoDropZone', 'logoDropZoneText', 'logoInput', settings.logo_url);
   fillDropzonePreview('qrDropZone', 'qrDropZoneText', 'qrInput', settings.qr_url);
@@ -757,10 +785,83 @@ function setupSiteImageDropzone(zoneId, textId, inputId, onSelected) {
   });
 }
 
+// ---------- ຮູບພາບປະຈຳໝວດໝູ່ 1-10 — ເລືອກຮູບແລ້ວອັບໂຫລດ+ບັນທຶກອັດຕະໂນມັດທັນທີ (ບໍ່ຕ້ອງກົດປຸ່ມບັນທຶກແຍກ) ----------
+function initCategoryImageDropzones() {
+  for (let i = 1; i <= 10; i++) {
+    const zoneId = `catImgDrop${i}`;
+    const textId = `catImgDropText${i}`;
+    const inputId = `catImgInput${i}`;
+    const removeId = `catImgRemove${i}`;
+    const msgId = `catImgMsg${i}`;
+
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const removeBtn = document.getElementById(removeId);
+    const msg = document.getElementById(msgId);
+    if (!zone || !input) continue; // ໜ້ານີ້ບໍ່ໄດ້ໃສ່ dropzone ຂອງໝວດນີ້ໄວ້ -> ຂ້າມແບບປອດໄພ
+
+    input.addEventListener('change', async () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      // ສະແດງຕົວຢ່າງທັນທີຂະນະລໍຖ້າອັບໂຫລດ (ຮູ້ສຶກໄວ, ບໍ່ຕ້ອງລໍຄ້າງໜ້າຈໍ)
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        zone.classList.add('has-image');
+        const textEl = document.getElementById(textId);
+        if (textEl) textEl.remove();
+        let img = zone.querySelector('img');
+        if (!img) { img = document.createElement('img'); zone.insertBefore(img, input); }
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      if (msg) setMsg(msg, 'ກຳລັງອັບໂຫລດ...', 'pending');
+      try {
+        const url = await uploadSiteAsset(file, `category-${i}`);
+        await ensureSiteSettingsRow();
+        const { error } = await supabaseClient
+          .from(SITE_SETTINGS_TABLE)
+          .update({ [`category_${i}_image`]: url, updated_at: new Date().toISOString() })
+          .eq('id', SITE_SETTINGS_ID);
+        if (error) throw error;
+        if (msg) setMsg(msg, 'ບັນທຶກຮູບໝວດໝູ່ນີ້ສຳເລັດແລ້ວ ✓', 'success');
+        await loadSiteSettingsAdmin();
+      } catch (err) {
+        console.error(err);
+        if (msg) setMsg(msg, 'ອັບໂຫລດບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+      } finally {
+        input.value = '';
+      }
+    });
+
+    if (removeBtn) {
+      removeBtn.addEventListener('click', async () => {
+        if (!confirm('ລຶບຮູບໝວດໝູ່ນີ້ ແລະ ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ?')) return;
+        if (msg) setMsg(msg, 'ກຳລັງລຶບ...', 'pending');
+        try {
+          await ensureSiteSettingsRow();
+          const { error } = await supabaseClient
+            .from(SITE_SETTINGS_TABLE)
+            .update({ [`category_${i}_image`]: null, updated_at: new Date().toISOString() })
+            .eq('id', SITE_SETTINGS_ID);
+          if (error) throw error;
+          if (msg) setMsg(msg, 'ລຶບຮູບແລ້ວ', 'success');
+          await loadSiteSettingsAdmin();
+        } catch (err) {
+          console.error(err);
+          if (msg) setMsg(msg, 'ລຶບບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+        }
+      });
+    }
+  }
+}
+
 function initSiteSettingsPanel() {
   setupSiteImageDropzone('logoDropZone', 'logoDropZoneText', 'logoInput', (f) => { selectedLogoFile = f; });
   setupSiteImageDropzone('qrDropZone', 'qrDropZoneText', 'qrInput', (f) => { selectedQrFile = f; });
   setupSiteImageDropzone('qrDropZone2', 'qrDropZoneText2', 'qrInput2', (f) => { selectedQrFile2 = f; });
+  initCategoryImageDropzones();
 
   const saveStoreNameBtn = document.getElementById('saveStoreNameBtn');
   if (saveStoreNameBtn) {
@@ -798,19 +899,24 @@ function initSiteSettingsPanel() {
   if (saveCategoriesBtn) {
     saveCategoriesBtn.addEventListener('click', async () => {
       const msg = document.getElementById('categoriesMsg');
-      const newCat1 = document.getElementById('settingCat1').value.trim() || 'ໝວດໝູ່ 1';
-      const newCat2 = document.getElementById('settingCat2').value.trim() || 'ໝວດໝູ່ 2';
-      const newCat3 = document.getElementById('settingCat3').value.trim() || 'ໝວດໝູ່ 3';
+
+      // ອ່ານຄ່າໝວດໝູ່ 1-10 ຈາກຟອມ (ຂ້າມອັນທີ່ input ບໍ່ມີໃນໜ້າ ເພື່ອປ້ອງກັນ error)
+      const newNames = {};
+      const renames = [];
+      for (let i = 1; i <= 10; i++) {
+        const input = document.getElementById(`settingCat${i}`);
+        if (!input) continue;
+        const newName = input.value.trim() || `ໝວດໝູ່ ${i}`;
+        const oldName = currentSiteSettings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`;
+        newNames[`category_${i}_name`] = newName;
+        renames.push([oldName, newName]);
+      }
 
       setLoading(saveCategoriesBtn, true);
       setMsg(msg, 'ກຳລັງບັນທຶກ ແລະ ຍ້າຍສິນຄ້າໄປໝວດໝູ່ໃໝ່...', 'pending');
       try {
         await ensureSiteSettingsRow();
-        const oldCat1 = currentSiteSettings.category_1_name || 'ໝວດໝູ່ 1';
-        const oldCat2 = currentSiteSettings.category_2_name || 'ໝວດໝູ່ 2';
-        const oldCat3 = currentSiteSettings.category_3_name || 'ໝວດໝູ່ 3';
 
-        const renames = [[oldCat1, newCat1], [oldCat2, newCat2], [oldCat3, newCat3]];
         for (const [oldName, newName] of renames) {
           if (oldName !== newName) {
             const { error: catError } = await supabaseClient
@@ -824,9 +930,7 @@ function initSiteSettingsPanel() {
         const { error } = await supabaseClient
           .from(SITE_SETTINGS_TABLE)
           .update({
-            category_1_name: newCat1,
-            category_2_name: newCat2,
-            category_3_name: newCat3,
+            ...newNames,
             updated_at: new Date().toISOString()
           })
           .eq('id', SITE_SETTINGS_ID);
