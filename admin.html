@@ -701,16 +701,17 @@
         </div>
       </div>
 
-      <!-- ຮູບປະຈຳໝວດໝູ່ 1-10 (ໂຊວ໌ຢູ່ card ໝວດໝູ່ໜ້າຫຼັກ) -->
+      <!-- ຊື່ + ຮູບປະຈຳໝວດໝູ່ 1-10 (ໂຊວ໌ຢູ່ card ໝວດໝູ່ໜ້າຫຼັກ ແລະ ໜ້າ "ໝວດໝູ່ທັງໝົດ") -->
       <div class="stat-panel">
         <h3>
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-          ຮູບພາບປະຈຳໝວດໝູ່ (1-10)
+          ໝວດໝູ່ສິນຄ້າ (1-10) — ຊື່ ແລະ ຮູບພາບ
         </h3>
-        <p style="font-size:12px;color:var(--ink-500);margin:0 0 10px;">ເລືອກຮູບໃຫ້ໝວດໝູ່ໃດກໍໄດ້ຕາມທີ່ຕ້ອງການ ຈະໃສ່ຄົບ 10 ຫຼືບໍ່ຄົບກໍໄດ້ — ອັບໂຫລດ ແລະ ບັນທຶກອັດຕະໂນມັດທັນທີ</p>
+        <p style="font-size:12px;color:var(--ink-500);margin:0 0 10px;">ຕັ້ງຊື່ ແລະ ເລືອກຮູບໃຫ້ໝວດໝູ່ໃດກໍໄດ້ຕາມທີ່ຕ້ອງການ ຈະໃສ່ຄົບ 10 ຫຼືບໍ່ຄົບກໍໄດ້ — ຮູບພາບອັບໂຫລດ+ບັນທຶກອັດຕະໂນມັດທັນທີ, ສ່ວນຊື່ໃຫ້ກົດປຸ່ມ "ບັນທຶກຊື່ໝວດໝູ່" ຢູ່ລຸ່ມສຸດ</p>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 1</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 1 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName1" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop1">
               <span id="catImgDropText1">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput1" accept="image/*">
@@ -720,8 +721,9 @@
           <div class="gx-msg" id="catImgMsg1"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 2</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 2 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName2" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop2">
               <span id="catImgDropText2">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput2" accept="image/*">
@@ -731,8 +733,9 @@
           <div class="gx-msg" id="catImgMsg2"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 3</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 3 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName3" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop3">
               <span id="catImgDropText3">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput3" accept="image/*">
@@ -742,8 +745,9 @@
           <div class="gx-msg" id="catImgMsg3"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 4</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 4 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName4" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop4">
               <span id="catImgDropText4">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput4" accept="image/*">
@@ -753,8 +757,9 @@
           <div class="gx-msg" id="catImgMsg4"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 5</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 5 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName5" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop5">
               <span id="catImgDropText5">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput5" accept="image/*">
@@ -764,8 +769,9 @@
           <div class="gx-msg" id="catImgMsg5"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 6</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 6 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName6" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop6">
               <span id="catImgDropText6">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput6" accept="image/*">
@@ -775,8 +781,9 @@
           <div class="gx-msg" id="catImgMsg6"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 7</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 7 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName7" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop7">
               <span id="catImgDropText7">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput7" accept="image/*">
@@ -786,8 +793,9 @@
           <div class="gx-msg" id="catImgMsg7"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 8</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 8 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName8" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop8">
               <span id="catImgDropText8">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput8" accept="image/*">
@@ -797,8 +805,9 @@
           <div class="gx-msg" id="catImgMsg8"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 9</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 9 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName9" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop9">
               <span id="catImgDropText9">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput9" accept="image/*">
@@ -808,8 +817,9 @@
           <div class="gx-msg" id="catImgMsg9"></div>
         </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 10</label>
-          <div class="cat-img-row">
+          <label>ໝວດໝູ່ 10 — ຊື່ (ຈະໂຊວ໌ໃນໜ້າ "ໝວດໝູ່ທັງໝົດ" ແລະ ໃຊ້ເປັນຕົວເລືອກຕອນເພີ່ມສິນຄ້າ)</label>
+          <div class="gx-input-wrap"><input type="text" id="catName10" placeholder="ຕົວຢ່າງ: ບັດເຕີມເກມ"></div>
+          <div class="cat-img-row" style="margin-top:8px;">
             <div class="drop-zone cat-img-drop" id="catImgDrop10">
               <span id="catImgDropText10">ແຕະເພື່ອເລືອກຮູບໝວດໝູ່ນີ້ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
               <input type="file" id="catImgInput10" accept="image/*">
@@ -818,6 +828,11 @@
           </div>
           <div class="gx-msg" id="catImgMsg10"></div>
         </div>
+        <button type="button" class="gx-submit" id="saveCategoryNamesBtn" style="margin-top:14px;">
+          <span class="gx-spinner"></span>
+          <span class="gx-submit-label">ບັນທຶກຊື່ໝວດໝູ່ທັງໝົດ</span>
+        </button>
+        <div class="gx-msg" id="categoryNamesMsg"></div>
       </div>
 
       <!-- ຊ່ອງທາງໂຊເຊียล (footer ໜ້າຫຼັກ) -->

@@ -262,7 +262,7 @@ function buildCategoryFilter(){
     showAllBtn.addEventListener('click', () => {
       const grid = document.getElementById('productGrid');
       if (!grid) {
-        window.location.href = 'products.html';
+        window.location.href = 'categories.html';
         return;
       }
       currentCategory = 'all';

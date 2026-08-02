@@ -131,10 +131,14 @@ async function loadProducts() {
 }
 
 // ---------- ຕົວເລືອກໝວດໝູ່ (ຊື່ໝວດໝູ່ຫຼັກຈາກການຕັ້ງຄ່າຮ້ານ + ໝວດໝູ່ອື່ນທີ່ມີໃນສິນຄ້າຢູ່ແລ້ວ) ----------
+// ໃຊ້ຊື່ຈິງທີ່ແອດມິນຕັ້ງໄວ້ໃນ "ຕັ້ງຄ່າຮ້ານ > ໝວດໝູ່ 1-10" (category_1_name ... category_10_name)
+// ເພື່ອໃຫ້ໝວດໝູ່ທີ່ເລືອກຕອນເພີ່ມສິນຄ້າ ກົງກັນກັບ card ໝວດໝູ່ທີ່ໂຊວ໌ຢູ່ໜ້າຮ້ານ/ໜ້າໝວດໝູ່ທັງໝົດ ແບບ 100%
 function getCurrentCategoryNames() {
   const names = [];
   for (let i = 1; i <= 10; i++) {
-    names.push(String(i));
+    const raw = currentSiteSettings && currentSiteSettings[`category_${i}_name`];
+    const name = (raw ? String(raw) : `ໝວດໝູ່ ${i}`).trim();
+    if (name) names.push(name);
   }
   return names;
 }
@@ -697,8 +701,12 @@ function loadSiteSettingsIntoForm(settings) {
   if (qrLabel1Input && document.activeElement !== qrLabel1Input) qrLabel1Input.value = settings.qr_label || '';
   if (qrLabel2Input && document.activeElement !== qrLabel2Input) qrLabel2Input.value = settings.qr_label_2 || '';
 
-  // ໝວດໝູ່ 1-10: ຮູບພາບ (ຊື່ໝວດໝູ່ບໍ່ໃຫ້ແກ້ຈາກຫ້ອງແອດມິນອີກຕໍ່ໄປແລ້ວ, ໃຊ້ຄ່າເບື້ອງຫຼັງຄືເກົ່າ)
+  // ໝວດໝູ່ 1-10: ຊື່ + ຮູບພາບ
   for (let i = 1; i <= 10; i++) {
+    const nameInputEl = document.getElementById(`catName${i}`);
+    if (nameInputEl && document.activeElement !== nameInputEl) {
+      nameInputEl.value = settings[`category_${i}_name`] || '';
+    }
     resetDropzoneIfEmpty(
       `catImgDrop${i}`, `catImgDropText${i}`, `catImgInput${i}`,
       settings[`category_${i}_image`],
@@ -952,6 +960,23 @@ function initSiteSettingsPanel() {
       const msg = document.getElementById('taglineMsg');
       const tagline = document.getElementById('settingTagline').value.trim();
       saveSiteSettingsFields({ tagline }, saveTaglineBtn, msg, 'ບັນທຶກຄຳອະທິບາຍສຳເລັດແລ້ວ');
+    });
+  }
+
+  const saveCategoryNamesBtn = document.getElementById('saveCategoryNamesBtn');
+  if (saveCategoryNamesBtn) {
+    saveCategoryNamesBtn.addEventListener('click', () => {
+      const msg = document.getElementById('categoryNamesMsg');
+      const fields = {};
+      for (let i = 1; i <= 10; i++) {
+        const input = document.getElementById(`catName${i}`);
+        const val = input ? input.value.trim() : '';
+        fields[`category_${i}_name`] = val || `ໝວດໝູ່ ${i}`;
+      }
+      saveSiteSettingsFields(
+        fields, saveCategoryNamesBtn, msg,
+        'ບັນທຶກຊື່ໝວດໝູ່ທັງໝົດສຳເລັດແລ້ວ — ໜ້າຮ້ານຈິງຈະອັບເດດອັດຕະໂນມັດ'
+      );
     });
   }
 
