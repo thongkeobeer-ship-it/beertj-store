@@ -197,6 +197,9 @@ function renderManageList(products) {
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               `}
             </button>
+            <button class="icon-btn hard-del-btn" title="ລຶບຖາວອນ (ລຶບຖິ້ມ ບໍ່ສາມາດກູ້ຄືນໄດ້)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </button>
           </div>
         </div>
         ${p.duration_enabled && p.durations && p.durations.length ? `
@@ -226,6 +229,7 @@ function renderManageList(products) {
     const id = row.dataset.id;
     row.querySelector('.save-btn').addEventListener('click', () => saveProduct(id, row));
     row.querySelector('.del-btn').addEventListener('click', () => toggleArchiveProduct(id, row));
+    row.querySelector('.hard-del-btn').addEventListener('click', () => hardDeleteProduct(id, row));
 
     const pauseCb = row.querySelector('.edit-paused');
     const pauseNoteWrap = row.querySelector('.pause-note-wrap');
@@ -337,6 +341,47 @@ async function toggleArchiveProduct(id, row) {
 
   showToast(nextArchived ? 'ເອົາອອກຈາກໜ້າຮ້ານແລ້ວ' : 'ນຳກັບມາສະແດງແລ້ວ');
   loadProducts();
+}
+
+// ---------- ລຶບສິນຄ້າຖາວອນ (ລຶບຖິ້ມ ບໍ່ໄດ້ພຽງແຕ່ເຊື່ອງ — ບໍ່ສາມາດກູ້ຄືນໄດ້) ----------
+async function hardDeleteProduct(id, row) {
+  const p = currentProducts.find(x => x.id === id);
+  if (!p) return;
+
+  const ok = confirm(
+    `ລຶບ "${p.name || 'ສິນຄ້ານີ້'}" ຖາວອນ?\n\nຈະລຶບຂໍ້ມູນສິນຄ້າ, ໄລຍະເວລາ, ລິ້ງໂບນັດ ແລະ ລະຫັດຄົງເຫຼືອທັງໝົດຂອງສິນຄ້ານີ້ອອກຈາກລະບົບ. ບໍ່ສາມາດກູ້ຄືນໄດ້.\n\n(ຖ້າຢາກແຕ່ເຊື່ອງໄວ້ ແລະ ຍັງເກັບປະຫວັດໄວ້ ໃຫ້ໃຊ້ປຸ່ມ "ເອົາອອກຈາກໜ້າຮ້ານ" ແທນ)`
+  );
+  if (!ok) return;
+
+  if (row) {
+    row.style.opacity = '0.5';
+    row.style.pointerEvents = 'none';
+  }
+
+  try {
+    // ລຶບແຖວທີ່ອ້າງອີງເຖິງສິນຄ້ານີ້ກ່ອນ (ລະຫັດ, ໄລຍະເວລາ, ລິ້ງໂບນັດ) ເພື່ອບໍ່ໃຫ້ຕິດ foreign key
+    const { error: codesErr } = await supabaseClient.from('product_codes').delete().eq('product_id', id);
+    if (codesErr) throw codesErr;
+
+    const { error: durErr } = await supabaseClient.from('product_durations').delete().eq('product_id', id);
+    if (durErr) throw durErr;
+
+    const { error: linksErr } = await supabaseClient.from('product_links').delete().eq('product_id', id);
+    if (linksErr) throw linksErr;
+
+    const { error: prodErr } = await supabaseClient.from('products').delete().eq('id', id);
+    if (prodErr) throw prodErr;
+
+    showToast('ລຶບສິນຄ້າຖາວອນແລ້ວ');
+    loadProducts();
+  } catch (err) {
+    console.error(err);
+    showToast('ລຶບບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'));
+    if (row) {
+      row.style.opacity = '';
+      row.style.pointerEvents = '';
+    }
+  }
 }
 
 // ---------- toast ນ້ອຍໆ ----------
