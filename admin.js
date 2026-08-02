@@ -359,28 +359,21 @@ async function hardDeleteProduct(id, row) {
   }
 
   try {
-    // ອໍເດີເກົ່າຂອງສິນຄ້ານີ້ຕ້ອງລຶບອອກກ່ອນ (orders.product_id ຫ້າມເປັນຄ່າຫວ່າງ ຈຶ່ງ nullify ບໍ່ໄດ້)
-    const { error: delOrdersErr } = await supabaseClient.from('orders').delete().eq('product_id', id);
-    if (delOrdersErr) throw delOrdersErr;
-
-    // ລຶບແຖວທີ່ອ້າງອີງເຖິງສິນຄ້ານີ້ (ລະຫັດ, ໄລຍະເວລາ, ລິ້ງໂບນັດ) ເພື່ອບໍ່ໃຫ້ຕິດ foreign key
-    const { error: codesErr } = await supabaseClient.from('product_codes').delete().eq('product_id', id);
-    if (codesErr) throw codesErr;
-
-    const { error: durErr } = await supabaseClient.from('product_durations').delete().eq('product_id', id);
-    if (durErr) throw durErr;
-
-    const { error: linksErr } = await supabaseClient.from('product_links').delete().eq('product_id', id);
-    if (linksErr) throw linksErr;
-
-    const { error: prodErr } = await supabaseClient.from('products').delete().eq('id', id);
-    if (prodErr) throw prodErr;
+    // ລຶບແບບ atomic ດ້ວຍ function ຝັ່ງຖານຂໍ້ມູນ (ຂ້າມບັນຫາ RLS/foreign key ທັງໝົດ)
+    // ຕ້ອງແລ່ນ supabase_migration_admin_delete_product.sql ໃນ Supabase ກ່ອນ ຈຶ່ງຈະໃຊ້ໄດ້
+    const { error } = await supabaseClient.rpc('admin_delete_product', { p_product_id: id });
+    if (error) throw error;
 
     showToast('ລຶບສິນຄ້າຖາວອນແລ້ວ');
     loadProducts();
   } catch (err) {
     console.error(err);
-    showToast('ລຶບບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'));
+    const notSetUp = /function .* does not exist|schema cache/i.test(err.message || '');
+    showToast(
+      notSetUp
+        ? 'ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ: ກະລຸນາແລ່ນ supabase_migration_admin_delete_product.sql ໃນ Supabase SQL Editor ກ່ອນ'
+        : 'ລຶບບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ')
+    );
     if (row) {
       row.style.opacity = '';
       row.style.pointerEvents = '';
