@@ -417,8 +417,14 @@ function computeRevealProgress(card){
 }
 
 // ບອກ browser ໃຫ້ໃຊ້ subpixel/GPU compositing (translate3d) ເພື່ອຄວາມນຸ້ມນວນ ບໍ່ກະຕຸກ
+// ໝາຍເຫດ: ຄ່າ progress ຈະບໍ່ຫຼຸດລົງອີກຫຼັງຈາກເຄີຍຂຶ້ນສູງສຸດແລ້ວ (ໃຊ້ dataset.revealMax ເກັບຄ່າສູງສຸດໄວ້)
+// ດັ່ງນັ້ນເມື່ອ card ໂຜ່ຂຶ້ນມາເຫັນຄົບແລ້ວ ມັນຈະຄ້າງນິ່ງຢູ່ບ່ອນນັ້ນ ບໍ່ເດັ້ງເຂົ້າ-ອອກຊ້ຳໆ ຕອນເລື່ອນຂຶ້ນລົງຜ່ານໄປມາ
 function updateRevealCard(card){
-  const progress = computeRevealProgress(card);
+  const rawProgress = computeRevealProgress(card);
+  const prevMax = parseFloat(card.dataset.revealMax || '0');
+  const progress = rawProgress > prevMax ? rawProgress : prevMax;
+  card.dataset.revealMax = String(progress);
+
   const shiftY = REVEAL_MAX_SHIFT_Y * (1 - progress);
   const scale = 0.97 + progress * 0.03;
 

@@ -198,7 +198,8 @@ function applyAnnouncement(text) {
 }
 
 // ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic) ----------
-// ໂຊວ໌ຮູບພາບ (ຖ້າແອດມິນອັບໂຫລດໄວ້) ແລະ ຊື່ໝວດໝູ່ຢູ່ເທິງ card — ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ
+// ໂຊວ໌ຮູບພາບ (ຖ້າແອດມິນອັບໂຫລດໄວ້) ເທົ່ານັ້ນ — ບໍ່ໂຊວ໌ຊື່ໝວດໝູ່ຢູ່ເທິງ card ອີກຕໍ່ໄປ (ຮູບພາບຫຼາຍອັນມີ text ຢູ່ໃນຕົວແລ້ວ)
+// ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ
 function renderCategoryCards(settings) {
   const container = document.getElementById('categoryCardsDynamic');
   if (!container) return;
@@ -215,7 +216,7 @@ function renderCategoryCards(settings) {
     const isActive = (prevActiveCategory && prevActiveCategory === name) ? ' is-active' : '';
     const hasImageClass = image ? ' has-image' : '';
     const imgHtml = image ? `<img class="cat-card-media" src="${image}" alt="${safeName}">` : '';
-    html += `<div class="cat-card${isActive}${hasImageClass}" data-category="${safeName}" data-cat-slot="${i}">${imgHtml}<h3 class="shine-text">${safeName}</h3></div>`;
+    html += `<div class="cat-card${isActive}${hasImageClass}" data-category="${safeName}" data-cat-slot="${i}">${imgHtml}</div>`;
   }
   container.innerHTML = html;
 
