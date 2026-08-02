@@ -965,14 +965,49 @@ function initSiteSettingsPanel() {
 
   const saveCategoryNamesBtn = document.getElementById('saveCategoryNamesBtn');
   if (saveCategoryNamesBtn) {
-    saveCategoryNamesBtn.addEventListener('click', () => {
+    saveCategoryNamesBtn.addEventListener('click', async () => {
       const msg = document.getElementById('categoryNamesMsg');
       const fields = {};
+      const renames = [];
+
       for (let i = 1; i <= 10; i++) {
         const input = document.getElementById(`catName${i}`);
         const val = input ? input.value.trim() : '';
-        fields[`category_${i}_name`] = val || `ໝວດໝູ່ ${i}`;
+        const newName = val || `ໝວດໝູ່ ${i}`;
+        const oldName = (
+          currentSiteSettings && currentSiteSettings[`category_${i}_name`]
+            ? String(currentSiteSettings[`category_${i}_name`])
+            : `ໝວດໝູ່ ${i}`
+        ).trim();
+        fields[`category_${i}_name`] = newName;
+        if (oldName && oldName !== newName) {
+          renames.push({ oldName, newName });
+        }
       }
+
+      // ຖ້າມີການປ່ຽນຊື່ໝວດໝູ່ -> ຕ້ອງອັບເດດສິນຄ້າທຸກອັນທີ່ຍັງໃຊ້ຊື່ເກົ່າ (products.category ເປັນຂໍ້ຄວາມ ບໍ່ແມ່ນ id)
+      // ບໍ່ດັ່ງນັ້ນສິນຄ້າຈະຫຼຸດອອກຈາກໝວດ ແລະ ຕົວເລືອກໝວດໝູ່ຕອນເພີ່ມສິນຄ້າຈະຄ້າງຊື່ເກົ່າໄວ້ຄູ່ກັບຊື່ໃໝ່
+      if (renames.length) {
+        setLoading(saveCategoryNamesBtn, true);
+        setMsg(msg, 'ກຳລັງອັບເດດສິນຄ້າໃນໝວດ...', 'pending');
+        try {
+          for (const r of renames) {
+            const { error } = await supabaseClient
+              .from('products')
+              .update({ category: r.newName })
+              .eq('category', r.oldName);
+            if (error) throw error;
+          }
+          await loadProducts(); // ໂຫຼດສິນຄ້າ+ຕົວເລືອກໝວດໝູ່ໃໝ່ ເພື່ອບໍ່ໃຫ້ຄ້າງຊື່ເກົ່າໃນ dropdown
+        } catch (err) {
+          console.error(err);
+          setLoading(saveCategoryNamesBtn, false);
+          setMsg(msg, 'ເກີດຂໍ້ຜິດພາດຕອນອັບເດດສິນຄ້າ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+          return;
+        }
+        setLoading(saveCategoryNamesBtn, false);
+      }
+
       saveSiteSettingsFields(
         fields, saveCategoryNamesBtn, msg,
         'ບັນທຶກຊື່ໝວດໝູ່ທັງໝົດສຳເລັດແລ້ວ — ໜ້າຮ້ານຈິງຈະອັບເດດອັດຕະໂນມັດ'

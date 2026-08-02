@@ -31,19 +31,12 @@ function productCardHtml(p){
   const isPaused = !!p.paused;
   const buyDisabled = outOfStock || isPaused;
 
-  // ສະຖານະ: ຢຸດຂາຍຊົ່ວຄາວ > ສິນຄ້າໝົດ > ພ້ອມສົ່ງ (ຄືກັນກັບ paused-banner ຂອງ checkout.js)
-  // ຈຸດເດັ່ນ: ຈຸດ/ໂຕໜັງສືຕ້ອງປ່ຽນສີຕາມສະຖານະຈິງ (ຂຽວ=ພ້ອມສົ່ງ, ແດງ=ສິນຄ້າໝົດ, ເຫຼືອງ=ຢຸດຂາຍຊົ່ວຄາວ)
-  let statusText = 'ພ້ອມສົ່ງ';
-  let statusClass = 'is-live';
-  if (isPaused) { statusText = 'ຢຸດຂາຍຊົ່ວຄາວ'; statusClass = 'is-paused'; }
-  else if (outOfStock) { statusText = 'ສິນຄ້າໝົດ'; statusClass = 'is-out'; }
-
   // ສິນຄ້າແບບເລືອກໄລຍະເວລາ (duration_enabled) ບໍ່ມີ price ດຽວ -> ໂຊວ໌ "ເລີ່ມຕົ້ນ" ຈາກລາຄາຕ່ຳສຸດ
   const priceHtml = p.duration_enabled
     ? `<div class="price shine-text">ເລີ່ມຕົ້ນ ${formatKip(p.minPrice)}</div>`
     : `<div class="price shine-text">${formatKip(p.price)}</div>`;
 
-  // ປ້າຍ "ໃໝ່" ຖືກປ່ຽນເປັນຈຳນວນຂາຍແລ້ວແບບອັດຕະໂນມັດ (ຄິດຈາກອໍເດີທີ່ status = paid)
+  // ຈຳນວນຂາຍແລ້ວແທ້ຈິງ (ຄິດຈາກອໍເດີທີ່ status = paid)
   const soldCount = p.soldCount || 0;
 
   // ຂອບແດງ + ຂໍ້ຄວາມແດງເດັ່ນກາງຮູບສິນຄ້າ ເມື່ອຢຸດຂາຍຊົ່ວຄາວ (ຮວມທັງລາຍລະອຽດທີ່ແອດມິນພິມໄວ້)
@@ -54,13 +47,13 @@ function productCardHtml(p){
         ${p.paused_note ? `<div class="paused-overlay-note">${p.paused_note.replace(/</g, '&lt;')}</div>` : ''}
       </div>` : '';
 
-  // ປຸ່ມ "ສັ່ງຊື້": ຖ້າກົດບໍ່ໄດ້ ໃຫ້ເຫັນຊັດເຈນວ່າຫ້າມກົດ (ໄອຄອນຫ້າມ + ຂໍ້ຄວາມສະຖານະ) ແທນທີ່ຈະເປັນປຸ່ມສີຟ້າປົກກະຕິແຕ່ກົດບໍ່ໄດ້
+  // ປຸ່ມ "ສັ່ງຊື້": ຖ້າກົດບໍ່ໄດ້ ໃຫ້ເຫັນຊັດເຈນວ່າຫ້າມກົດ (ໄອຄອນຫ້າມ + ຂໍ້ຄວາມສະຖານະ) ແທນທີ່ຈະເປັນປຸ່ມແດງປົກກະຕິແຕ່ກົດບໍ່ໄດ້
   const buyBtnHtml = buyDisabled
     ? `<button class="buy-btn is-disabled" disabled type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="7" y1="7" x2="17" y2="17"/></svg>
         ${isPaused ? 'ຢຸດຂາຍຊົ່ວຄາວ' : 'ສິນຄ້າໝົດ'}
       </button>`
-    : `<button class="buy-btn">ສັ່ງຊື້ <span>→</span></button>`;
+    : `<button class="buy-btn">ສັ່ງຊື້</button>`;
 
   // ປ້າຍ "Best Seller" — ໂຊວ໌ໃຫ້ສິນຄ້າທີ່ຂາຍດີ (ຂາຍແລ້ວຫຼາຍກວ່າ 5 ຊິ້ນ)
   const bestSellerHtml = soldCount >= 5
@@ -71,18 +64,23 @@ function productCardHtml(p){
   <div class="product-card ${isPaused ? 'is-paused' : ''}" data-id="${p.id}">
     <div class="product-media">
       ${bestSellerHtml}
+      <div class="product-note-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      </div>
       ${img}
       ${pausedOverlayHtml}
     </div>
     <div class="product-body">
       <div class="product-title">${p.name}</div>
-      <div class="price-label">ລາຄາສິນຄ້າ</div>
       <div class="product-footer">
         ${priceHtml}
-        <div class="product-status ${statusClass}">${statusText}</div>
+        <div class="stock">ຄັງ ${p.stock || 0}</div>
       </div>
       ${buyBtnHtml}
-      <div class="stock">ຄົງເຫຼືອ ${p.stock || 0} ຊິ້ນ</div>
+      <div class="sold-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        ຂາຍໄປແລ້ວ ${soldCount} ຊິ້ນ
+      </div>
     </div>
   </div>`;
 }
