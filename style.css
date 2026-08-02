@@ -589,9 +589,17 @@ img.media-photo{
 .cat-card::before{
   content:"";position:absolute;inset:0;
   background:radial-gradient(circle at 80% 20%, rgba(255,207,77,0.10), transparent 55%);
+  z-index:1;
 }
-.cat-card h3{margin:0 0 6px;font-size:20px;position:relative;}
-.cat-card p{margin:0;font-size:13px;color:var(--ink-300);position:relative;}
+.cat-card-media{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0;
+}
+.cat-card.has-image::before{
+  background:linear-gradient(180deg, rgba(6,8,14,0.12) 0%, rgba(6,8,14,0.32) 45%, rgba(6,8,14,0.9) 100%);
+}
+.cat-card h3{margin:0 0 6px;font-size:20px;position:relative;z-index:2;}
+.cat-card p{margin:0;font-size:13px;color:var(--ink-300);position:relative;z-index:2;}
 .cat-card:active{transform:scale(0.98);}
 .cat-card.is-active{
   border-color:rgba(255,207,77,0.7);

@@ -198,8 +198,7 @@ function applyAnnouncement(text) {
 }
 
 // ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic) ----------
-// ໝາຍເຫດ: ບໍ່ໂຊວ໌ຮູບ ແລະ ບໍ່ໂຊວ໌ຊື່ໝວດໝູ່ເທິງ card ອີກຕໍ່ໄປແລ້ວ (ຕາມການຕັ້ງຄ່າ) —
-// card ຈະເປັນກ່ອງເປົ່າໆ ແຕ່ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ (ໃຊ້ category_N_name ເປັນ id ເບື້ອງຫຼັງ)
+// ໂຊວ໌ຮູບພາບ (ຖ້າແອດມິນອັບໂຫລດໄວ້) ແລະ ຊື່ໝວດໝູ່ຢູ່ເທິງ card — ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ
 function renderCategoryCards(settings) {
   const container = document.getElementById('categoryCardsDynamic');
   if (!container) return;
@@ -212,8 +211,11 @@ function renderCategoryCards(settings) {
   for (let i = 1; i <= 10; i++) {
     const name = String(settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
     const safeName = name.replace(/"/g, '&quot;');
+    const image = settings[`category_${i}_image`];
     const isActive = (prevActiveCategory && prevActiveCategory === name) ? ' is-active' : '';
-    html += `<div class="cat-card${isActive}" data-category="${safeName}" data-cat-slot="${i}"></div>`;
+    const hasImageClass = image ? ' has-image' : '';
+    const imgHtml = image ? `<img class="cat-card-media" src="${image}" alt="${safeName}">` : '';
+    html += `<div class="cat-card${isActive}${hasImageClass}" data-category="${safeName}" data-cat-slot="${i}">${imgHtml}<h3 class="shine-text">${safeName}</h3></div>`;
   }
   container.innerHTML = html;
 
