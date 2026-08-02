@@ -236,6 +236,17 @@ function buildCategoryFilter(){
     card.dataset.bound = '1';
     card.addEventListener('click', () => {
       const cat = card.dataset.category || 'all';
+      const grid = document.getElementById('productGrid');
+
+      // ໜ້ານີ້ບໍ່ມີກາດສິນຄ້າຢູ່ໃນໜ້າ (ເຊັ່ນ: ໜ້າຫຼັກ) -> ໄປໜ້າສິນຄ້າແຍກຕ່າງຫາກ ກັ່ນຕອງຕາມໝວດນີ້
+      if (!grid) {
+        const title = card.querySelector('h3')?.textContent || '';
+        window.location.href = (cat === 'all')
+          ? 'products.html'
+          : 'products.html?cat=' + encodeURIComponent(cat) + '&catLabel=' + encodeURIComponent(title);
+        return;
+      }
+
       currentCategory = cat;
       document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('is-active'));
       card.classList.add('is-active');
@@ -249,6 +260,11 @@ function buildCategoryFilter(){
   if (showAllBtn && !showAllBtn.dataset.bound) {
     showAllBtn.dataset.bound = '1';
     showAllBtn.addEventListener('click', () => {
+      const grid = document.getElementById('productGrid');
+      if (!grid) {
+        window.location.href = 'products.html';
+        return;
+      }
       currentCategory = 'all';
       document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('is-active'));
       document.querySelector('.cat-card[data-category="all"]')?.classList.add('is-active');
@@ -607,7 +623,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
         return;
       }
-      document.getElementById('productGrid')?.scrollIntoView({ behavior: 'smooth' });
+      (document.getElementById('productGrid') || document.getElementById('categorySection'))
+        ?.scrollIntoView({ behavior: 'smooth' });
     });
   }
 
@@ -640,6 +657,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ? matches.map(productCardHtml).join('')
         : '<div class="empty-note">ບໍ່ພົບສິນຄ້າທີ່ຄົ້ນຫາ</div>';
       attachProductCardBehaviors(matches);
+    });
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const grid = document.getElementById('productGrid');
+      if (grid) return; // ໜ້ານີ້ມີກາດສິນຄ້າຢູ່ແລ້ວ, ຄົ້ນຫາແບບ live ຈັດການໃຫ້ແລ້ວຂ້າງເທິງ
+      const q = searchInput.value.trim();
+      if (!q) return;
+      window.location.href = 'products.html?search=' + encodeURIComponent(q);
     });
   }
 

@@ -8,6 +8,14 @@
 (function () {
   let currentSortMode = 'newest';
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlCat = urlParams.get('cat') || '';
+  const urlCatLabel = urlParams.get('catLabel') || urlCat;
+  const urlSearch = (urlParams.get('search') || '').trim();
+
+  // ຕັ້ງຄ່າໝວດໝູ່ທີ່ເລືອກໄວ້ (ໃຊ້ຮ່ວມກັບ currentCategory ຈາກ script.js ເພື່ອໃຫ້ renderProducts ຮອບທຳອິດຖືກຕ້ອງ)
+  if (urlCat) currentCategory = urlCat;
+
   function sortPriceOf(p) {
     return p.duration_enabled ? (p.minPrice || 0) : (p.price || 0);
   }
@@ -15,6 +23,12 @@
   function sortedProductList(mode) {
     const source = (typeof allProducts !== 'undefined' && Array.isArray(allProducts)) ? allProducts : [];
     let list = source.slice();
+
+    if (urlCat) list = list.filter(p => p.category === urlCat);
+    if (urlSearch) {
+      const q = urlSearch.toLowerCase();
+      list = list.filter(p => (p.name || '').toLowerCase().includes(q));
+    }
 
     if (mode === 'in-stock') {
       list = list.filter(p => (p.stock || 0) > 0 && !p.paused);
@@ -35,17 +49,41 @@
     return list;
   }
 
+  function updateTitleAndFilterNote(count) {
+    const titleEl = document.querySelector('.products-title-row h1');
+    if (titleEl && (urlCat || urlSearch)) {
+      titleEl.textContent = urlCat ? urlCatLabel : `ຜົນຄົ້ນຫາ "${urlSearch}"`;
+    }
+
+    let note = document.getElementById('productsFilterNote');
+    if (urlCat || urlSearch) {
+      if (!note) {
+        note = document.createElement('div');
+        note.id = 'productsFilterNote';
+        note.className = 'products-count-note';
+        const titleRow = document.querySelector('.products-title-row');
+        titleRow?.insertAdjacentElement('afterend', note);
+      }
+      note.innerHTML = `ພົບ ${count} ລາຍການ · <a href="products.html" style="color:inherit;text-decoration:underline;">ລ້າງຕົວກອງ / ເບິ່ງທັງໝົດ</a>`;
+    } else if (note) {
+      note.remove();
+    }
+  }
+
   function renderSorted(mode) {
     const grid = document.getElementById('productGrid');
     if (!grid || typeof productCardHtml !== 'function') return;
 
     const list = sortedProductList(mode);
+    updateTitleAndFilterNote(list.length);
 
     if (!list.length) {
       const hasAny = (typeof allProducts !== 'undefined' && allProducts.length);
-      grid.innerHTML = hasAny
-        ? '<div class="empty-note">ບໍ່ພົບສິນຄ້າຕາມທີ່ເລືອກ</div>'
-        : '<div class="empty-note">ຍັງບໍ່ມີສິນຄ້າ — ແອດມິນຍັງບໍ່ໄດ້ເພີ່ມສິນຄ້າ</div>';
+      grid.innerHTML = (urlCat || urlSearch)
+        ? '<div class="empty-note">ບໍ່ພົບສິນຄ້າໃນໝວດ/ຄຳຄົ້ນຫານີ້</div>'
+        : (hasAny
+          ? '<div class="empty-note">ບໍ່ພົບສິນຄ້າຕາມທີ່ເລືອກ</div>'
+          : '<div class="empty-note">ຍັງບໍ່ມີສິນຄ້າ — ແອດມິນຍັງບໍ່ໄດ້ເພີ່ມສິນຄ້າ</div>');
       return;
     }
 
@@ -105,7 +143,7 @@
     const waitTimer = setInterval(() => {
       checks++;
       if (typeof allProducts !== 'undefined' && allProducts.length) {
-        if (currentSortMode !== 'newest') renderSorted(currentSortMode);
+        renderSorted(currentSortMode);
         clearInterval(waitTimer);
       }
       if (checks > 40) clearInterval(waitTimer); // ~10 ວິນາທີ ແລ້ວເລີກລໍ
