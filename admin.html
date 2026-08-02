@@ -682,141 +682,23 @@
         <div class="gx-msg" id="announcementMsg"></div>
       </div>
 
-      <!-- ຊື່ໝວດໝູ່ -->
+      <!-- ຮູບ hero ໜ້າຫຼັກ (ຮູບກາງໜ້າຫຼັກ, ແທນວິດີໂອຄ່າເລີ່ມຕົ້ນ) -->
       <div class="stat-panel">
         <h3>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          ຊື່ ແລະ ຮູບໝວດໝູ່ສິນຄ້າ (1-10)
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          ຮູບ Hero ໜ້າຫຼັກ
         </h3>
-        <div class="gx-msg" style="margin-bottom:10px;color:var(--ink-500);font-size:12px;">
-          ປ່ຽນຮູບໝວດໝູ່: ແຕະເລືອກຮູບແລ້ວອັບໂຫລດ+ບັນທຶກໃຫ້ອັດຕະໂນມັດທັນທີ. ຖ້າຍັງບໍ່ໃສ່ຮູບ ຈະໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນແທນ.
-          ຊື່ໝວດໝູ່ຕ້ອງກົດປຸ່ມ "ບັນທຶກຊື່ໝວດໝູ່" ດ້ານລຸ່ມເພື່ອບັນທຶກ.
-        </div>
         <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 1</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat1" placeholder="ໝວດໝູ່ 1"></div>
+          <label>ຮູບກາງໜ້າຫຼັກ (ຖ້າບໍ່ໃສ່ຮູບ ຈະໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນແທນ)</label>
           <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop1">
-              <span id="catImgDropText1">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput1" accept="image/*">
+            <div class="drop-zone cat-img-drop" id="heroImageDropZone">
+              <span id="heroImageDropZoneText">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
+              <input type="file" id="heroImageInput" accept="image/*">
             </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove1" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
+            <button type="button" class="cat-img-remove-btn" id="heroImageRemoveBtn" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
           </div>
-          <div class="gx-msg" id="catImgMsg1"></div>
+          <div class="gx-msg" id="heroImageMsg"></div>
         </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 2</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat2" placeholder="ໝວດໝູ່ 2"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop2">
-              <span id="catImgDropText2">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput2" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove2" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg2"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 3</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat3" placeholder="ໝວດໝູ່ 3"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop3">
-              <span id="catImgDropText3">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput3" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove3" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg3"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 4</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat4" placeholder="ໝວດໝູ່ 4"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop4">
-              <span id="catImgDropText4">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput4" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove4" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg4"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 5</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat5" placeholder="ໝວດໝູ່ 5"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop5">
-              <span id="catImgDropText5">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput5" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove5" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg5"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 6</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat6" placeholder="ໝວດໝູ່ 6"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop6">
-              <span id="catImgDropText6">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput6" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove6" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg6"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 7</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat7" placeholder="ໝວດໝູ່ 7"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop7">
-              <span id="catImgDropText7">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput7" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove7" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg7"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 8</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat8" placeholder="ໝວດໝູ່ 8"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop8">
-              <span id="catImgDropText8">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput8" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove8" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg8"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 9</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat9" placeholder="ໝວດໝູ່ 9"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop9">
-              <span id="catImgDropText9">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput9" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove9" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg9"></div>
-        </div>
-        <div class="gx-field cat-field-group">
-          <label>ໝວດໝູ່ 10</label>
-          <div class="gx-input-wrap"><input type="text" id="settingCat10" placeholder="ໝວດໝູ່ 10"></div>
-          <div class="cat-img-row">
-            <div class="drop-zone cat-img-drop" id="catImgDrop10">
-              <span id="catImgDropText10">ແຕະເພື່ອເລືອກຮູບ (ອັບໂຫລດອັດຕະໂນມັດ)</span>
-              <input type="file" id="catImgInput10" accept="image/*">
-            </div>
-            <button type="button" class="cat-img-remove-btn" id="catImgRemove10" title="ລຶບຮູບ, ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ">ລຶບຮູບ</button>
-          </div>
-          <div class="gx-msg" id="catImgMsg10"></div>
-        </div>
-        <button type="button" class="gx-submit" id="saveCategoriesBtn">
-          <span class="gx-spinner"></span>
-          <span class="gx-submit-label">ບັນທຶກຊື່ໝວດໝູ່</span>
-        </button>
-        <div class="gx-msg" id="categoriesMsg"></div>
       </div>
 
       <!-- ຊ່ອງທາງໂຊເຊียล (footer ໜ້າຫຼັກ) -->

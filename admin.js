@@ -698,12 +698,8 @@ function loadSiteSettingsIntoForm(settings) {
   if (qrLabel1Input && document.activeElement !== qrLabel1Input) qrLabel1Input.value = settings.qr_label || '';
   if (qrLabel2Input && document.activeElement !== qrLabel2Input) qrLabel2Input.value = settings.qr_label_2 || '';
 
-  // ໝວດໝູ່ 1-10: ຊື່ + ຮູບພາບ (ຖ້າ input/dropzone ບໍ່ມີໃນໜ້າ ຈະຂ້າມໄປແບບປອດໄພ)
+  // ໝວດໝູ່ 1-10: ຮູບພາບ (ຊື່ໝວດໝູ່ບໍ່ໃຫ້ແກ້ຈາກຫ້ອງແອດມິນອີກຕໍ່ໄປແລ້ວ, ໃຊ້ຄ່າເບື້ອງຫຼັງຄືເກົ່າ)
   for (let i = 1; i <= 10; i++) {
-    const catInput = document.getElementById(`settingCat${i}`);
-    if (catInput && document.activeElement !== catInput) {
-      catInput.value = settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`;
-    }
     resetDropzoneIfEmpty(
       `catImgDrop${i}`, `catImgDropText${i}`, `catImgInput${i}`,
       settings[`category_${i}_image`],
@@ -714,6 +710,11 @@ function loadSiteSettingsIntoForm(settings) {
   fillDropzonePreview('logoDropZone', 'logoDropZoneText', 'logoInput', settings.logo_url);
   fillDropzonePreview('qrDropZone', 'qrDropZoneText', 'qrInput', settings.qr_url);
   fillDropzonePreview('qrDropZone2', 'qrDropZoneText2', 'qrInput2', settings.qr_url_2);
+  resetDropzoneIfEmpty(
+    'heroImageDropZone', 'heroImageDropZoneText', 'heroImageInput',
+    settings.hero_image,
+    'ແຕະເພື່ອເລືອກຮູບ hero ໜ້າຫຼັກ (ອັບໂຫລດອັດຕະໂນມັດ)'
+  );
 }
 
 async function loadSiteSettingsAdmin() {
@@ -857,11 +858,81 @@ function initCategoryImageDropzones() {
   }
 }
 
+// ---------- ຮູບ hero ໜ້າຫຼັກ — ເລືອກຮູບແລ້ວອັບໂຫລດ+ບັນທຶກອັດຕະໂນມັດທັນທີ (ຄືກັນກັບຮູບໝວດໝູ່) ----------
+function initHeroImageDropzone() {
+  const zoneId = 'heroImageDropZone';
+  const textId = 'heroImageDropZoneText';
+  const inputId = 'heroImageInput';
+  const removeId = 'heroImageRemoveBtn';
+  const msgId = 'heroImageMsg';
+
+  const zone = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+  const removeBtn = document.getElementById(removeId);
+  const msg = document.getElementById(msgId);
+  if (!zone || !input) return;
+
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      zone.classList.add('has-image');
+      const textEl = document.getElementById(textId);
+      if (textEl) textEl.remove();
+      let img = zone.querySelector('img');
+      if (!img) { img = document.createElement('img'); zone.insertBefore(img, input); }
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    if (msg) setMsg(msg, 'ກຳລັງອັບໂຫລດ...', 'pending');
+    try {
+      const url = await uploadSiteAsset(file, 'hero');
+      await ensureSiteSettingsRow();
+      const { error } = await supabaseClient
+        .from(SITE_SETTINGS_TABLE)
+        .update({ hero_image: url, updated_at: new Date().toISOString() })
+        .eq('id', SITE_SETTINGS_ID);
+      if (error) throw error;
+      if (msg) setMsg(msg, 'ບັນທຶກຮູບ hero ສຳເລັດແລ້ວ ✓', 'success');
+      await loadSiteSettingsAdmin();
+    } catch (err) {
+      console.error(err);
+      if (msg) setMsg(msg, 'ອັບໂຫລດບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+    } finally {
+      input.value = '';
+    }
+  });
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', async () => {
+      if (!confirm('ລຶບຮູບ hero ນີ້ ແລະ ກັບໄປໃຊ້ວິດີໂອຄ່າເລີ່ມຕົ້ນ?')) return;
+      if (msg) setMsg(msg, 'ກຳລັງລຶບ...', 'pending');
+      try {
+        await ensureSiteSettingsRow();
+        const { error } = await supabaseClient
+          .from(SITE_SETTINGS_TABLE)
+          .update({ hero_image: null, updated_at: new Date().toISOString() })
+          .eq('id', SITE_SETTINGS_ID);
+        if (error) throw error;
+        if (msg) setMsg(msg, 'ລຶບຮູບແລ້ວ', 'success');
+        await loadSiteSettingsAdmin();
+      } catch (err) {
+        console.error(err);
+        if (msg) setMsg(msg, 'ລຶບບໍ່ສຳເລັດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+      }
+    });
+  }
+}
+
 function initSiteSettingsPanel() {
   setupSiteImageDropzone('logoDropZone', 'logoDropZoneText', 'logoInput', (f) => { selectedLogoFile = f; });
   setupSiteImageDropzone('qrDropZone', 'qrDropZoneText', 'qrInput', (f) => { selectedQrFile = f; });
   setupSiteImageDropzone('qrDropZone2', 'qrDropZoneText2', 'qrInput2', (f) => { selectedQrFile2 = f; });
   initCategoryImageDropzones();
+  initHeroImageDropzone();
 
   const saveStoreNameBtn = document.getElementById('saveStoreNameBtn');
   if (saveStoreNameBtn) {
@@ -892,59 +963,6 @@ function initSiteSettingsPanel() {
       const text = document.getElementById('settingAnnouncement').value.trim();
       if (!text) { setMsg(msg, 'ກະລຸນາໃສ່ຂໍ້ຄວາມປະກາດ', 'error'); return; }
       saveSiteSettingsFields({ announcement_text: text }, saveAnnouncementBtn, msg, 'ບັນທຶກຂໍ້ຄວາມປະກາດສຳເລັດແລ້ວ');
-    });
-  }
-
-  const saveCategoriesBtn = document.getElementById('saveCategoriesBtn');
-  if (saveCategoriesBtn) {
-    saveCategoriesBtn.addEventListener('click', async () => {
-      const msg = document.getElementById('categoriesMsg');
-
-      // ອ່ານຄ່າໝວດໝູ່ 1-10 ຈາກຟອມ (ຂ້າມອັນທີ່ input ບໍ່ມີໃນໜ້າ ເພື່ອປ້ອງກັນ error)
-      const newNames = {};
-      const renames = [];
-      for (let i = 1; i <= 10; i++) {
-        const input = document.getElementById(`settingCat${i}`);
-        if (!input) continue;
-        const newName = input.value.trim() || `ໝວດໝູ່ ${i}`;
-        const oldName = currentSiteSettings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`;
-        newNames[`category_${i}_name`] = newName;
-        renames.push([oldName, newName]);
-      }
-
-      setLoading(saveCategoriesBtn, true);
-      setMsg(msg, 'ກຳລັງບັນທຶກ ແລະ ຍ້າຍສິນຄ້າໄປໝວດໝູ່ໃໝ່...', 'pending');
-      try {
-        await ensureSiteSettingsRow();
-
-        for (const [oldName, newName] of renames) {
-          if (oldName !== newName) {
-            const { error: catError } = await supabaseClient
-              .from('products')
-              .update({ category: newName })
-              .eq('category', oldName);
-            if (catError) throw catError;
-          }
-        }
-
-        const { error } = await supabaseClient
-          .from(SITE_SETTINGS_TABLE)
-          .update({
-            ...newNames,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', SITE_SETTINGS_ID);
-        if (error) throw error;
-
-        setMsg(msg, 'ປ່ຽນຊື່ໝວດໝູ່ສຳເລັດແລ້ວ — ສິນຄ້າເກົ່າຖືກຍ້າຍໄປໝວດໃໝ່ໃຫ້ອັດຕະໂນມັດ', 'success');
-        await loadSiteSettingsAdmin();
-        await loadProducts();
-      } catch (err) {
-        console.error(err);
-        setMsg(msg, 'ເກີດຂໍ້ຜິດພາດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
-      } finally {
-        setLoading(saveCategoriesBtn, false);
-      }
     });
   }
 

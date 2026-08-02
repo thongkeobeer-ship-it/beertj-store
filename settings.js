@@ -38,7 +38,9 @@ const DEFAULT_SITE_SETTINGS = {
   category_8_image: null,
   category_9_image: null,
   category_10_image: null,
-  // ລິ້ງຊ່ອງທາງໂຊເຊียລ — ແກ້ໄຂໄດ້ຈາກຫ້ອງຄວບຄຸມແອດມິນ > ຕັ້ງຄ່າຮ້ານ > ຊ່ອງທາງໂຊເຊียລ
+  // ຮູບ hero ໜ້າຫຼັກ (ຖ້າແອດມິນອັບໂຫລດໄວ້ ຈະໃຊ້ຮູບນີ້ແທນວິດີໂອ hero-live.mp4 ຄ່າເລີ່ມຕົ້ນ)
+  hero_image: null,
+  // ລິ້ງຊ່ອງທາງໂຊເຊียล — ແກ້ໄຂໄດ້ຈາກຫ້ອງຄວບຄຸມແອດມິນ > ຕັ້ງຄ່າຮ້ານ > ຊ່ອງທາງໂຊເຊียລ
   social_facebook: null,
   social_discord: null,
   social_line: null,
@@ -195,22 +197,9 @@ function applyAnnouncement(text) {
   restartAnnounceMarquee();
 }
 
-// ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic, ໃຊ້ຮູບພາບແທນວິດີໂອຖ້າແອດມິນອັບໂຫລດໄວ້) ----------
-// ວິດີໂອຄ່າເລີ່ມຕົ້ນ: ມີສະເພາະໝວດ 1-3 (ໄຟລ໌ເດີມ), ໝວດ 4-10 ຖ້າບໍ່ມີຮູບຈະໃຊ້ cat-all.mp4 ແທນ
-const CATEGORY_DEFAULT_MEDIA = {
-  1: 'cat-1.mp4',
-  2: 'cat-2.mp4',
-  3: 'cat-3.mp4'
-};
-
-function categoryCardMediaHtml(imageUrl, fallbackVideo) {
-  if (imageUrl) {
-    return `<img class="cat-card-media" src="${imageUrl}" alt="" onerror="this.remove()">`;
-  }
-  const video = fallbackVideo || 'cat-all.mp4';
-  return `<video class="cat-card-media" src="${video}" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>`;
-}
-
+// ---------- ໝວດໝູ່ (ສ້າງ card ໝວດໝູ່ 1-10 ແບບ dynamic) ----------
+// ໝາຍເຫດ: ບໍ່ໂຊວ໌ຮູບ ແລະ ບໍ່ໂຊວ໌ຊື່ໝວດໝູ່ເທິງ card ອີກຕໍ່ໄປແລ້ວ (ຕາມການຕັ້ງຄ່າ) —
+// card ຈະເປັນກ່ອງເປົ່າໆ ແຕ່ຍັງກົດເພື່ອກັ່ນຕອງສິນຄ້າຕາມໝວດໄດ້ຄືເກົ່າ (ໃຊ້ category_N_name ເປັນ id ເບື້ອງຫຼັງ)
 function renderCategoryCards(settings) {
   const container = document.getElementById('categoryCardsDynamic');
   if (!container) return;
@@ -222,20 +211,32 @@ function renderCategoryCards(settings) {
   let html = '';
   for (let i = 1; i <= 10; i++) {
     const name = String(settings[`category_${i}_name`] || `ໝວດໝູ່ ${i}`);
-    const image = settings[`category_${i}_image`];
-    const media = categoryCardMediaHtml(image, CATEGORY_DEFAULT_MEDIA[i]);
     const safeName = name.replace(/"/g, '&quot;');
     const isActive = (prevActiveCategory && prevActiveCategory === name) ? ' is-active' : '';
-    html += `
-      <div class="cat-card${isActive}" data-category="${safeName}" data-cat-slot="${i}">
-        ${media}
-        <h3 class="shine-text">${name.replace(/</g, '&lt;')}</h3>
-      </div>`;
+    html += `<div class="cat-card${isActive}" data-category="${safeName}" data-cat-slot="${i}"></div>`;
   }
   container.innerHTML = html;
 
   // ຜູກ event ຄລິກໃສ່ card ໃໝ່ (ຟັງຊັນນີ້ຢູ່ script.js, ຮອງຮັບການເອີ້ນຊ້ຳຫຼາຍຄັ້ງໄດ້ຢ່າງປອດໄພ)
   if (typeof buildCategoryFilter === 'function') buildCategoryFilter();
+}
+
+// ---------- ຮູບ hero ໜ້າຫຼັກ (ຖ້າແອດມິນອັບໂຫລດຮູບໄວ້ ຈະໃຊ້ຮູບແທນວິດີໂອ hero-live.mp4 ຄ່າເລີ່ມຕົ້ນ) ----------
+function applyHeroImage(url) {
+  const video = document.getElementById('heroLiveVideo');
+  const img = document.getElementById('heroImageCustom');
+  if (!video || !img) return;
+  if (url) {
+    img.src = url;
+    img.style.display = '';
+    video.style.display = 'none';
+    video.pause();
+  } else {
+    img.style.display = 'none';
+    img.removeAttribute('src');
+    video.style.display = '';
+    video.play().catch(() => {});
+  }
 }
 
 async function applySiteSettings() {
@@ -248,6 +249,7 @@ async function applySiteSettings() {
   applyAnnouncement(settings.announcement_text);
   applyQr(settings);
   renderCategoryCards(settings);
+  applyHeroImage(settings.hero_image);
   applySocialLinks(settings);
 
   return settings;
@@ -300,4 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // alter table site_settings add column if not exists qr_url_2   text;
 // alter table site_settings add column if not exists qr_label   text;
 // alter table site_settings add column if not exists qr_label_2 text;
+//
+// ຖ້າຍັງບໍ່ມີຄໍລຳຮູບ hero ໜ້າຫຼັກ ໃຫ້ແລ່ນຄຳສັ່ງນີ້ນຳ:
+// alter table site_settings add column if not exists hero_image text;
 // ============================================
