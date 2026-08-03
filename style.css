@@ -2282,15 +2282,7 @@ body{
   border:none !important;
   border-radius:16px !important;
 }
-.product-note-badge{
-  position:absolute; top:10px; right:10px; z-index:3;
-  width:32px; height:32px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(10,6,6,0.65);
-  border:1.5px solid var(--gp-red);
-  color:var(--gp-red);
-}
-.product-note-badge svg{ width:15px; height:15px; }
+.product-note-badge{ display:none !important; }
 .badge-row{ display:none !important; }
 
 .ribbon-best{
@@ -2323,8 +2315,8 @@ body{
 }
 .price{
   font-size:18px !important; font-weight:800 !important;
-  color:var(--gp-red) !important; background:none !important;
-  -webkit-text-fill-color:var(--gp-red) !important; animation:none !important; text-shadow:none !important;
+  color:var(--shine-dim) !important; background:none !important;
+  -webkit-text-fill-color:var(--shine-dim) !important; animation:none !important; text-shadow:none !important;
 }
 .stock{
   font-size:12.5px !important; color:var(--gp-text-dim) !important;
