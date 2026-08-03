@@ -192,6 +192,51 @@ function playSideMenuIntro() {
   });
 }
 
+// ============================================
+// ບັອດ "ຕິດຕໍ່ພວກເຮົາ" (bottom sheet) — ຮາຍການຖືກສ້າງໂດຍ settings.js: renderContactModal()
+// ============================================
+function openContactModal() {
+  const overlay = document.getElementById('contactModalOverlay');
+  const panel = document.getElementById('contactModal');
+  if (!overlay || !panel) return;
+  overlay.classList.add('show');
+  panel.classList.add('show');
+  panel.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('contact-modal-open');
+}
+
+function closeContactModal() {
+  const overlay = document.getElementById('contactModalOverlay');
+  const panel = document.getElementById('contactModal');
+  if (!overlay || !panel) return;
+  overlay.classList.remove('show');
+  panel.classList.remove('show');
+  panel.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('contact-modal-open');
+}
+
+function initContactModal() {
+  const overlay = document.getElementById('contactModalOverlay');
+  const panel = document.getElementById('contactModal');
+  const closeBtn = document.getElementById('contactModalClose');
+  const contactLink = document.getElementById('sideMenuContactLink');
+  if (!overlay || !panel) return; // ໜ້ານີ້ບໍ່ມີບັອດຕິດຕໍ່
+
+  if (overlay) overlay.addEventListener('click', closeContactModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeContactModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel.classList.contains('show')) closeContactModal();
+  });
+
+  if (contactLink) {
+    contactLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeSideMenu();
+      setTimeout(openContactModal, 200);
+    });
+  }
+}
+
 function initSideMenu() {
   const menuBtn = document.getElementById('menuBtn');
   const overlay = document.getElementById('menuOverlay');
@@ -232,4 +277,7 @@ function initSideMenu() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initSideMenu);
+document.addEventListener('DOMContentLoaded', () => {
+  initSideMenu();
+  initContactModal();
+});

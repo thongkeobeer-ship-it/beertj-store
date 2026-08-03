@@ -176,6 +176,65 @@ function applySocialLinks(settings) {
   });
 }
 
+// ---------- ບັອດ "ຕິດຕໍ່ພວກເຮົາ" (bottom sheet) ----------
+// ສ້າງລາຍການຊ່ອງທາງຕິດຕໍ່ dynamic ຈາກລິ້ງທີ່ແອດມິນຕັ້ງໄວ້ (ອັນໃດບໍ່ໄດ້ຕັ້ງ -> ບໍ່ໂຊວ໌)
+const CONTACT_CHANNELS = [
+  {
+    key: 'facebook', name: 'Facebook',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg>'
+  },
+  {
+    key: 'discord', name: 'Discord',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.2" fill="currentColor" stroke="none"/><path d="M8 4.5c2.7-.9 5.3-.9 8 0M6 6.2C3.8 7.6 2.8 10 2.8 15.8c1.6 1.6 3.6 2.5 5.7 2.7l.9-1.7M18 6.2c2.2 1.4 3.2 3.8 3.2 9.6-1.6 1.6-3.6 2.5-5.7 2.7l-.9-1.7"/></svg>'
+  },
+  {
+    key: 'line', name: 'Line',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
+  },
+  {
+    key: 'telegram', name: 'Telegram',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>'
+  },
+  {
+    key: 'whatsapp', name: 'WhatsApp',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.4-4.7A8.5 8.5 0 1 1 8 19.5L3 21Z"/><path d="M8.5 8.7c.2-.4.5-.4.8-.4h.6c.2 0 .4 0 .6.4l.8 1.8c.1.3 0 .5-.1.7l-.6.7c-.1.1-.1.3 0 .5.4.8 1.6 2 2.5 2.4.2.1.4.1.5 0l.7-.6c.2-.2.4-.2.7-.1l1.8.8c.3.1.4.3.4.6v.6c0 .3 0 .6-.4.8-1.6.9-3.9.3-6-1.8-2-2-2.6-4.3-1.9-6Z" fill="currentColor" stroke="none"/></svg>'
+  }
+];
+
+function renderContactModal(settings) {
+  const list = document.getElementById('contactModalList');
+  const empty = document.getElementById('contactModalEmpty');
+  if (!list || !empty) return;
+
+  const map = {
+    facebook: settings.social_facebook,
+    discord: settings.social_discord,
+    line: settings.social_line,
+    telegram: settings.social_telegram,
+    whatsapp: settings.social_whatsapp
+  };
+
+  const active = CONTACT_CHANNELS.filter((ch) => !!map[ch.key]);
+
+  if (!active.length) {
+    list.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = active.map((ch) => `
+    <a class="contact-modal-item" href="${map[ch.key]}" target="_blank" rel="noopener noreferrer">
+      <div class="contact-modal-icon icon-${ch.key}">${ch.icon}</div>
+      <div class="contact-modal-info">
+        <div class="contact-modal-name">${ch.name}</div>
+        <div class="contact-modal-url">${map[ch.key]}</div>
+      </div>
+      <svg class="contact-modal-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  `).join('');
+}
+
 // ---------- ຂໍ້ຄວາມປະກາດ (ເລື່ອນຂວາໄປຊ້າຍ ວົນຊ້ຳໄປເລື່ອຍໆ) ----------
 function restartAnnounceMarquee() {
   const track = document.getElementById('announceTrack');
@@ -326,6 +385,7 @@ async function applySiteSettings() {
   renderCategoryCards(settings);
   applyHeroImage(settings.hero_image);
   applySocialLinks(settings);
+  renderContactModal(settings);
 
   return settings;
 }

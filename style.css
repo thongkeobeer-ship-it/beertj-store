@@ -1597,6 +1597,89 @@ body{
 body.menu-open{overflow:hidden;}
 
 /* ============================================================
+   ບັອດ "ຕິດຕໍ່ພວກເຮົາ" — bottom sheet ຂຶ້ນຈາກລຸ່ມ
+   ຮາຍການຖືກສ້າງແບບ dynamic ຈາກ settings.js: renderContactModal()
+   ໂດຍອີງໃສ່ລິ້ງທີ່ແອດມິນຕັ້ງໄວ້ໃນ > ຕັ້ງຄ່າຮ້ານ > ຊ່ອງທາງໂຊເຊียล
+============================================================ */
+.contact-modal-overlay{
+  position:fixed;inset:0;z-index:220;
+  background:rgba(10,12,20,0.6);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;
+  transition:opacity .28s ease;
+}
+.contact-modal-overlay.show{opacity:1;pointer-events:auto;}
+
+.contact-modal{
+  position:fixed;left:0;right:0;bottom:0;z-index:221;
+  max-width:480px;margin:0 auto;
+  background:linear-gradient(180deg, var(--navy-900), var(--navy-950));
+  border:1px solid rgba(255,207,77,0.22);border-bottom:none;
+  border-radius:22px 22px 0 0;
+  box-shadow:0 -16px 44px rgba(0,0,0,0.45);
+  padding:10px 18px max(18px, env(safe-area-inset-bottom));
+  max-height:78vh;overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.2,.8,.2,1);
+}
+.contact-modal.show{transform:translateY(0);}
+
+.contact-modal-handle{
+  width:38px;height:4px;border-radius:3px;
+  background:rgba(255,255,255,0.18);
+  margin:6px auto 16px;
+}
+
+.contact-modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  margin-bottom:16px;
+}
+.contact-modal-title{font-size:17px;font-weight:800;color:var(--ink-100);}
+.contact-modal-subtitle{font-size:12.5px;color:var(--ink-500);margin-top:4px;}
+.contact-modal-close{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  color:var(--ink-100);cursor:pointer;
+}
+.contact-modal-close svg{width:14px;height:14px;}
+.contact-modal-close:active{transform:scale(0.9);}
+
+.contact-modal-list{display:flex;flex-direction:column;gap:10px;padding-bottom:6px;}
+.contact-modal-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  text-decoration:none;color:inherit;
+  transition:border-color .2s ease, background .2s ease, transform .12s ease;
+}
+.contact-modal-item:hover{border-color:rgba(255,207,77,0.32);}
+.contact-modal-item:active{transform:scale(0.98);}
+.contact-modal-icon{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+}
+.contact-modal-icon svg{width:19px;height:19px;stroke:#fff;}
+.contact-modal-icon.icon-facebook{background:#1877f2;}
+.contact-modal-icon.icon-discord{background:#5865f2;}
+.contact-modal-icon.icon-line{background:#06c755;}
+.contact-modal-icon.icon-telegram{background:#29a9eb;}
+.contact-modal-icon.icon-whatsapp{background:#25d366;}
+.contact-modal-info{flex:1;min-width:0;}
+.contact-modal-name{font-size:14px;font-weight:700;color:var(--ink-100);}
+.contact-modal-url{
+  font-size:11.5px;color:var(--ink-500);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.contact-modal-arrow{width:16px;height:16px;stroke:var(--ink-500);flex-shrink:0;}
+
+.contact-modal-empty{font-size:13px;color:var(--ink-500);text-align:center;padding:20px 4px 28px;}
+
+body.contact-modal-open{overflow:hidden;}
+
+/* ============================================================
    ແຖບໄອຄອນຄວາມໜ້າເຊື່ອຖື (TRUST BADGES)
 ============================================================ */
 .trust-badges{

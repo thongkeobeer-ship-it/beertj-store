@@ -116,7 +116,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h.01"/></svg>
       ເຕີມເງິນ
     </a>
-    <a class="side-menu-link" href="index.html#siteFooter" id="sideMenuContactLink">
+    <a class="side-menu-link" href="#" id="sideMenuContactLink">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       ຕິດຕໍ່ພວກເຮົາ
     </a>
@@ -158,6 +158,23 @@
     </a>
   </div>
 </aside>
+<!-- ===== ບັອດ "ຕິດຕໍ່ພວກເຮົາ" (ຂຶ້ນຈາກລຸ່ມ) — ຮາຍການສ້າງແບບ dynamic ຈາກ settings.js ===== -->
+<div class="contact-modal-overlay" id="contactModalOverlay"></div>
+<div class="contact-modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contactModalTitle">
+  <div class="contact-modal-handle"></div>
+  <div class="contact-modal-head">
+    <div>
+      <div class="contact-modal-title" id="contactModalTitle">ຕິດຕໍ່ພວກເຮົາ</div>
+      <div class="contact-modal-subtitle">ຊ່ອງທາງການຕິດຕໍ່</div>
+    </div>
+    <button class="contact-modal-close" id="contactModalClose" aria-label="ປິດ" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="contact-modal-list" id="contactModalList"></div>
+  <div class="contact-modal-empty" id="contactModalEmpty" style="display:none;">ຍັງບໍ່ໄດ້ຕັ້ງຄ່າຊ່ອງທາງຕິດຕໍ່</div>
+</div>
+
 
 <div class="wrap">
 
