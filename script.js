@@ -551,41 +551,23 @@ function syncHeroSignName(){
 
 // ============================================
 // ຜູ້ໃຊ້ງານອອນລາຍ (ຕົວເລກ "ຜູ້ໃຊ້ງານ" ໃນ stat-grid) — ນັບແບບສົດໆ ດ້ວຍ Supabase Realtime Presence
-// ບໍ່ຕ້ອງມີຕາຕະລາງໃນຖານຂໍ້ມູນ: ທຸກຄົນທີ່ເປີດໜ້ານີ້ຄ້າງໄວ້ຈະຖືກນັບເປັນ "presence" ໜຶ່ງອັນ
-// ເມື່ອຄົນອື່ນເປີດ/ປິດໜ້າ ຕົວເລກຈະອັບເດດໃຫ້ທຸກຄົນເຫັນທັນທີໂດຍບໍ່ຕ້ອງ refresh
 // ============================================
-function getOnlinePresenceKey() {
-  try {
-    let key = sessionStorage.getItem('presenceKey');
-    if (!key) {
-      key = 'v-' + Math.random().toString(36).slice(2) + Date.now();
-      sessionStorage.setItem('presenceKey', key);
-    }
-    return key;
-  } catch (e) {
-    return 'v-' + Math.random().toString(36).slice(2) + Date.now();
-  }
-}
-
-function initOnlineUsersPresence() {
+// ຈຳນວນຜູ້ໃຊ້ທັງໝົດ (ຄົນທີ່ລົງທະບຽນຈິງ) — ນັບແຖວໃນຕາຕະລາງ wallets
+// (wallet_setup.sql ສ້າງແຖວ wallet ໃຫ້ອັດຕະໂນມັດທຸກຄັ້ງທີ່ມີຄົນລົງທະບຽນໃໝ່ ດັ່ງນັ້ນຈຳນວນແຖວ = ຈຳນວນຜູ້ໃຊ້ທັງໝົດ)
+// ============================================
+async function loadTotalUsersCount() {
   if (typeof supabaseClient === 'undefined') return;
   const el = document.getElementById('statOnlineUsers');
   if (!el) return;
-
-  const channel = supabaseClient.channel('storefront-online-users', {
-    config: { presence: { key: getOnlinePresenceKey() } }
-  });
-
-  channel.on('presence', { event: 'sync' }, () => {
-    const state = channel.presenceState();
-    el.textContent = Object.keys(state).length;
-  });
-
-  channel.subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      await channel.track({ online_at: new Date().toISOString() });
-    }
-  });
+  try {
+    const { count, error } = await supabaseClient
+      .from('wallets')
+      .select('*', { count: 'exact', head: true });
+    if (error) throw error;
+    el.textContent = (count || 0).toLocaleString('en-US');
+  } catch (err) {
+    console.error('ດຶງຈຳນວນຜູ້ໃຊ້ບໍ່ສຳເລັດ', err);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -690,7 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLatestOrders();
 
   // ເລີ່ມນັບຜູ້ໃຊ້ງານອອນລາຍແບບສົດໆ
-  initOnlineUsersPresence();
+  loadTotalUsersCount();
 
   // ອັບເດດສົດ: ເມື່ອແອດມິນເພີ່ມ/ແກ້ໄຂ/ລຶບສິນຄ້າ (ຫຼືປ່ຽນ paused/archived) ໜ້າຮ້ານຈະຣີເຟຣຊອັດຕະໂນມັດ
   if (typeof supabaseClient !== 'undefined') {

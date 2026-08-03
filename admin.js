@@ -130,7 +130,75 @@ async function loadProducts() {
   return withStock;
 }
 
-// ---------- ຕົວເລືອກໝວດໝູ່ (ຊື່ໝວດໝູ່ຫຼັກຈາກການຕັ້ງຄ່າຮ້ານ + ໝວດໝູ່ອື່ນທີ່ມີໃນສິນຄ້າຢູ່ແລ້ວ) ----------
+// ---------- ປຸ່ມ "ຢືນຢັນ" ຢູ່ຄູ່ກັບແຕ່ລະຊ່ອງຊື່ໝວດໝູ່ (ບໍ່ຕ້ອງເລື່ອນລົງໄປກົດປຸ່ມລວມທາງລຸ່ມ) ----------
+// ບັນທຶກສະເພາະໝວດໝູ່ນັ້ນອັນດຽວ, ພ້ອມອັບເດດສິນຄ້າທີ່ໃຊ້ຊື່ເກົ່າຢູ່ໃຫ້ຕາມຊື່ໃໝ່ນຳ (ຄືກັນກັບປຸ່ມລວມ)
+async function saveSingleCategoryName(i) {
+  const input = document.getElementById(`catName${i}`);
+  const btn = document.getElementById(`catNameConfirm${i}`);
+  const msg = document.getElementById(`catNameMsg${i}`);
+  if (!input || !btn) return;
+
+  const val = input.value.trim();
+  const newName = val || `ໝວດໝູ່ ${i}`;
+  const oldName = (
+    currentSiteSettings && currentSiteSettings[`category_${i}_name`]
+      ? String(currentSiteSettings[`category_${i}_name`])
+      : `ໝວດໝູ່ ${i}`
+  ).trim();
+
+  if (oldName === newName) {
+    setMsg(msg, 'ຍັງບໍ່ໄດ້ແກ້ໄຂຫຍັງ', 'pending');
+    return;
+  }
+
+  setLoading(btn, true);
+  setMsg(msg, 'ກຳລັງບັນທຶກ...', 'pending');
+  try {
+    if (oldName) {
+      const { error: renameError } = await supabaseClient
+        .from('products')
+        .update({ category: newName })
+        .eq('category', oldName);
+      if (renameError) throw renameError;
+      await loadProducts();
+    }
+
+    await ensureSiteSettingsRow();
+    const { error: settingsError } = await supabaseClient
+      .from(SITE_SETTINGS_TABLE)
+      .update({ [`category_${i}_name`]: newName, updated_at: new Date().toISOString() })
+      .eq('id', SITE_SETTINGS_ID);
+    if (settingsError) throw settingsError;
+
+    setMsg(msg, 'ບັນທຶກຊື່ຫມວດໝູ່ນີ້ສຳເລັດແລ້ວ ✓ — ໜ້າຮ້ານຈິງຈະອັບເດດອັດຕະໂນມັດ', 'success');
+    await loadSiteSettingsAdmin();
+  } catch (err) {
+    console.error(err);
+    setMsg(msg, 'ເກີດຂໍ້ຜິດພາດ: ' + (err.message || 'ລອງໃໝ່ອີກຄັ້ງ'), 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+function initCategoryNameConfirmButtons() {
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.getElementById(`catNameConfirm${i}`);
+    if (btn && !btn.dataset.bound) {
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => saveSingleCategoryName(i));
+    }
+    const input = document.getElementById(`catName${i}`);
+    if (input && !input.dataset.bound) {
+      input.dataset.bound = '1';
+      // ກົດ Enter ໃນຊ່ອງຊື່ = ຢືນຢັນທັນທີ (ບໍ່ຕ້ອງກົດເມົາໃສ່ປຸ່ມ)
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); saveSingleCategoryName(i); }
+      });
+    }
+  }
+}
+
+
 // ໃຊ້ຊື່ຈິງທີ່ແອດມິນຕັ້ງໄວ້ໃນ "ຕັ້ງຄ່າຮ້ານ > ໝວດໝູ່ 1-10" (category_1_name ... category_10_name)
 // ເພື່ອໃຫ້ໝວດໝູ່ທີ່ເລືອກຕອນເພີ່ມສິນຄ້າ ກົງກັນກັບ card ໝວດໝູ່ທີ່ໂຊວ໌ຢູ່ໜ້າຮ້ານ/ໜ້າໝວດໝູ່ທັງໝົດ ແບບ 100%
 function getCurrentCategoryNames() {
@@ -940,6 +1008,7 @@ function initSiteSettingsPanel() {
   setupSiteImageDropzone('qrDropZone2', 'qrDropZoneText2', 'qrInput2', (f) => { selectedQrFile2 = f; });
   initCategoryImageDropzones();
   initHeroImageDropzone();
+  initCategoryNameConfirmButtons();
 
   const saveStoreNameBtn = document.getElementById('saveStoreNameBtn');
   if (saveStoreNameBtn) {
