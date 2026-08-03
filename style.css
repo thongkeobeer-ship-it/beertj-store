@@ -2261,16 +2261,16 @@ body{
 }
 .product-card{
   background:var(--gp-card) !important;
-  border:1px solid var(--gp-border) !important;
+  border:1px solid rgba(255,207,77,0.35) !important;
   border-radius:22px !important;
   overflow:hidden;
   box-shadow:none !important;
   display:flex; flex-direction:column;
 }
-.product-card.is-paused{ border-color:rgba(234,179,8,0.35) !important; }
+.product-card.is-paused{ border-color:rgba(234,179,8,0.55) !important; }
 .product-media{
   position:relative;
-  aspect-ratio:1/1;
+  aspect-ratio:4/3;
   height:auto !important;
   background:var(--gp-card-2);
   overflow:hidden;

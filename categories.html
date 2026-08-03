@@ -30,22 +30,23 @@
 
   .category-banner-card{
     display:block; text-decoration:none;
-    background:var(--gp-card); border:1px solid var(--gp-border);
-    border-radius:26px; overflow:hidden;
+    background:var(--gp-card); border:1.5px solid rgba(255,224,150,0.4);
+    border-radius:28px; overflow:hidden;
     padding:14px;
     transition:border-color .15s ease, transform .15s ease;
   }
   .category-banner-card:active{ transform:scale(0.985); }
-  .category-banner-card:hover{ border-color:rgba(255,255,255,0.22); }
+  .category-banner-card:hover{ border-color:rgba(255,224,150,0.65); }
 
   .category-banner-media{
     width:100%; aspect-ratio:2.35/1;
     background:var(--gp-card-2);
     overflow:hidden; position:relative;
-    border-radius:18px;
+    border-radius:22px;
   }
   .category-banner-media img{
     width:100%; height:100%; object-fit:cover; display:block;
+    border-radius:22px;
   }
   .category-banner-placeholder{
     width:100%; height:100%;
