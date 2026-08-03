@@ -86,15 +86,16 @@ function productCardHtml(p){
 }
 
 // ນັບຈຳນວນທີ່ຂາຍແລ້ວຈິງຂອງສິນຄ້າ (ລວມ quantity ຈາກທຸກອໍເດີທີ່ status = paid)
+// ໝາຍເຫດ: ໃຊ້ RPC ແທນການ select ຈາກຕາຕະລາງ orders ກົງໆ ເພາະ orders ຖືກຈຳກັດ RLS
+// ໃຫ້ເຫັນສະເພາະອໍເດີຂອງຕົນເອງ (ປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງລູກຄ້າ) — ຕົວເລກລວມນີ້ບໍ່ແມ່ນຂໍ້ມູນສ່ວນຕົວ
+// ຈຶ່ງດຶງຜ່ານ function ຝັ່ງ Supabase (product_sold_count) ທີ່ນັບແທນໃຫ້ໂດຍປອດໄພ
+// (ຕ້ອງແລ່ນ fix_rls_policies.sql ລ້າສຸດໃນ Supabase ກ່ອນ ຈຶ່ງຈະມີ function ນີ້)
 async function getSoldCount(productId){
   if (typeof supabaseClient === 'undefined') return 0;
   const { data, error } = await supabaseClient
-    .from('orders')
-    .select('quantity')
-    .eq('product_id', productId)
-    .eq('status', 'paid');
+    .rpc('product_sold_count', { p_product_id: productId });
   if (error) { console.error(error); return 0; }
-  return (data || []).reduce((sum, o) => sum + (o.quantity || 0), 0);
+  return Number(data || 0);
 }
 
 async function loadStoreProducts(){
@@ -560,11 +561,12 @@ async function loadTotalUsersCount() {
   const el = document.getElementById('statOnlineUsers');
   if (!el) return;
   try {
-    const { count, error } = await supabaseClient
-      .from('wallets')
-      .select('*', { count: 'exact', head: true });
+    // ໝາຍເຫດ: ໃຊ້ RPC (total_registered_users) ແທນການ select ຈາກຕາຕະລາງ wallets ກົງໆ
+    // ເພາະ wallets ຖືກຈຳກັດ RLS ໃຫ້ເຫັນສະເພາະຍອດເງິນຂອງຕົນເອງ (ປົກປ້ອງຄວາມເປັນສ່ວນຕົວ)
+    // ຕົວເລກ "ຈຳນວນຜູ້ໃຊ້ທັງໝົດ" ບໍ່ແມ່ນຂໍ້ມູນສ່ວນຕົວ ຈຶ່ງດຶງຜ່ານ function ທີ່ນັບແທນໃຫ້ໂດຍປອດໄພ
+    const { data, error } = await supabaseClient.rpc('total_registered_users');
     if (error) throw error;
-    el.textContent = (count || 0).toLocaleString('en-US');
+    el.textContent = Number(data || 0).toLocaleString('en-US');
   } catch (err) {
     console.error('ດຶງຈຳນວນຜູ້ໃຊ້ບໍ່ສຳເລັດ', err);
   }
